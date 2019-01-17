@@ -2,7 +2,7 @@ package config
 
 import "time"
 
-// HttpServerConfig contains configuration for http.Server.
+// HttpServerConfig contains configuration for a common HTTP server.
 type HttpServerConfig struct {
 	Address           string        `json:"address"             yaml:"address"`
 	ReadTimeout       time.Duration `json:"read-timeout"        yaml:"read-timeout"`

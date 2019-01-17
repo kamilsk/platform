@@ -4,7 +4,7 @@ import (
 	"errors"
 	"testing"
 
-	. "github.com/kamilsk/platform/sync"
+	. "github.com/kamilsk/platform/pkg/sync"
 	"github.com/stretchr/testify/assert"
 )
 
