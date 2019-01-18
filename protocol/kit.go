@@ -3,7 +3,7 @@ package protocol
 import (
 	"context"
 
-	"github.com/kamilsk/platform/sync"
+	"github.com/kamilsk/platform/pkg/sync"
 	"github.com/pkg/errors"
 )
 
