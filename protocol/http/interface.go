@@ -6,6 +6,8 @@ import "net/http"
 type Router interface {
 	// Handle registers the handler for the given pattern.
 	Handle(string, http.Handler)
+	// HandleFunc registers the handler function for the given pattern.
+	HandleFunc(string, func(http.ResponseWriter, *http.Request))
 }
 
 // Endpoint represents HTTP listener that can register its routes.
