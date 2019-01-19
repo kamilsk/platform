@@ -6,12 +6,25 @@ import (
 )
 
 // Reduce wraps sequence to perform some aggregate operations above it.
+//
+//     func Acquire(places ...int) {
+//             for range Sequence(Reduce(places...).Sum()) {
+//                     semaphore <- struct{}{}
+//             }
+//     }
+//
 func Reduce(sequence ...int) interface {
-	// Average returns the average value of the sequence.
+	// Average returns an average value of the sequence.
 	Average() float64
-	// Median returns the median value of the sequence.
+	// Count returns the sequence length.
+	Count() int
+	// Maximum returns a maximum value of the sequence.
+	Maximum() int
+	// Median returns a median value of the sequence.
 	Median() float64
-	// Sum returns the sum of the sequence.
+	// Minimum returns a minimum value of the sequence.
+	Minimum() int
+	// Sum returns a sum of the sequence.
 	Sum() int
 } {
 	return reducer(sequence)
@@ -19,7 +32,7 @@ func Reduce(sequence ...int) interface {
 
 type reducer []int
 
-// Average returns the average value of the sequence.
+// Average returns an average value of the sequence.
 func (sequence reducer) Average() float64 {
 	if len(sequence) == 0 {
 		return 0
@@ -27,10 +40,12 @@ func (sequence reducer) Average() float64 {
 	return float64(sequence.Sum()) / float64(len(sequence))
 }
 
+// Count returns the sequence length.
 func (sequence reducer) Count() int {
 	return len(sequence)
 }
 
+// Maximum returns a maximum value of the sequence.
 func (sequence reducer) Maximum() int {
 	if len(sequence) == 0 {
 		return 0
@@ -44,14 +59,13 @@ func (sequence reducer) Maximum() int {
 	return max
 }
 
-// Median returns the median value of the sequence.
+// Median returns a median value of the sequence.
 func (sequence reducer) Median() float64 {
 	size := len(sequence)
 	if size == 0 {
 		return 0
 	}
-	sorted := make([]int, size)
-	copy(sorted, sequence)
+	sorted := append(make([]int, 0, size), sequence...)
 	sort.Ints(sorted)
 	if size%2 == 0 {
 		return (float64(sorted[size/2-1]) + float64(sorted[size/2])) / 2
@@ -59,6 +73,7 @@ func (sequence reducer) Median() float64 {
 	return float64(sorted[size/2])
 }
 
+// Minimum returns a minimum value of the sequence.
 func (sequence reducer) Minimum() int {
 	if len(sequence) == 0 {
 		return 0
@@ -72,7 +87,7 @@ func (sequence reducer) Minimum() int {
 	return min
 }
 
-// Sum returns the sum of the sequence.
+// Sum returns a sum of the sequence.
 func (sequence reducer) Sum() int {
 	sum := 0
 	for _, num := range sequence {

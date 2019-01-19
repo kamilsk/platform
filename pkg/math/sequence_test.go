@@ -28,6 +28,43 @@ func TestReducer_Average(t *testing.T) {
 	}
 }
 
+func TestReducer_Count(t *testing.T) {
+	tests := []struct {
+		name     string
+		sequence []int
+		expected int
+	}{
+		{"nil, zero length", nil, 0},
+		{"empty, zero length", []int{}, 0},
+		{"normal case", []int{1, 2, 3}, 3},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, Reduce(tc.sequence...).Count())
+		})
+	}
+}
+
+func TestReducer_Maximum(t *testing.T) {
+	tests := []struct {
+		name     string
+		sequence []int
+		expected int
+	}{
+		{"nil, zero maximum", nil, 0},
+		{"empty, zero maximum", nil, 0},
+		{"sorted", []int{1, 2, 3}, 3},
+		{"unsorted", []int{3, 2, 1}, 3},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, Reduce(tc.sequence...).Maximum())
+		})
+	}
+}
+
 func TestReducer_Median(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -35,7 +72,7 @@ func TestReducer_Median(t *testing.T) {
 		expected float64
 	}{
 		{"nil, zero median", nil, 0},
-		{"empty, zero median", nil, 0},
+		{"empty, zero median", []int{}, 0},
 		{"even, sorted", []int{1, 2, 3, 4}, 2.5},
 		{"even, unsorted", []int{2, 1, 4, 3}, 2.5},
 		{"odd, sorted", []int{1, 2, 3, 4, 5}, 3},
@@ -45,6 +82,25 @@ func TestReducer_Median(t *testing.T) {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
 			assert.Equal(t, tc.expected, Reduce(tc.sequence...).Median())
+		})
+	}
+}
+
+func TestReducer_Minimum(t *testing.T) {
+	tests := []struct {
+		name     string
+		sequence []int
+		expected int
+	}{
+		{"nil, zero minimum", nil, 0},
+		{"empty, zero minimum", nil, 0},
+		{"sorted", []int{1, 2, 3}, 1},
+		{"unsorted", []int{3, 2, 1}, 1},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, Reduce(tc.sequence...).Minimum())
 		})
 	}
 }
