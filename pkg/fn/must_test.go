@@ -10,9 +10,9 @@ import (
 
 func TestMust(t *testing.T) {
 	tests := []struct {
-		name     string
-		actions  []func() error
-		assert func(assert.TestingT, assert.PanicTestFunc, ...interface{}) bool
+		name    string
+		actions []func() error
+		assert  func(assert.TestingT, assert.PanicTestFunc, ...interface{}) bool
 	}{
 		{
 			"with panic",
@@ -36,7 +36,7 @@ func TestMust(t *testing.T) {
 	for _, test := range tests {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
-			tc.assert(t, func() { Must(tc.actions...)} )
+			tc.assert(t, func() { Must(tc.actions...) })
 		})
 	}
 }
