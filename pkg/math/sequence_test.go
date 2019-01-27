@@ -131,7 +131,7 @@ func TestSequence(t *testing.T) {
 		size int
 	}{
 		{"constant", 5},
-		{"random", rand.New(rand.NewSource(time.Now().UnixNano())).Int()},
+		{"random", rand.New(rand.NewSource(time.Now().UnixNano())).Intn(1000)},
 	}
 	for _, test := range tests {
 		tc := test

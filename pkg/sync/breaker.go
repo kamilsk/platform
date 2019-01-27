@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"os/signal"
+	"reflect"
 	"sync"
 	"time"
 )
@@ -22,7 +23,7 @@ func BreakByDeadline(deadline time.Time) Breaker {
 	if timeout < 0 {
 		return closedBreaker()
 	}
-	return newTimedBreaker(timeout)
+	return newTimedBreaker(timeout).trigger()
 }
 
 // BreakBySignal ...
@@ -30,7 +31,7 @@ func BreakBySignal(sig ...os.Signal) Breaker {
 	if len(sig) == 0 {
 		return closedBreaker()
 	}
-	return newSignaledBreaker(sig)
+	return newSignaledBreaker(sig).trigger()
 }
 
 // BreakByTimeout ...
@@ -38,14 +39,22 @@ func BreakByTimeout(timeout time.Duration) Breaker {
 	if timeout < 0 {
 		return closedBreaker()
 	}
-	return newTimedBreaker(timeout)
+	return newTimedBreaker(timeout).trigger()
+}
+
+// Multiplex ...
+func Multiplex(breakers ...Breaker) Breaker {
+	if len(breakers) == 0 {
+		return closedBreaker()
+	}
+	return newMultiplexedBreaker(breakers).trigger()
 }
 
 // WithContext ...
 func WithContext(parent context.Context, breaker Breaker) context.Context {
 	ctx, cancel := context.WithCancel(parent)
 	go func() {
-		<-breaker.Done() // this channel is never will be nil, thanks to private trigger() method
+		<-breaker.Done()
 		cancel()
 	}()
 	return ctx
@@ -78,8 +87,36 @@ func (br *breaker) trigger() Breaker {
 	return br
 }
 
+func newMultiplexedBreaker(entries []Breaker) Breaker {
+	return &multiplexedBreaker{newBreaker(), entries}
+}
+
+type multiplexedBreaker struct {
+	*breaker
+	entries []Breaker
+}
+
+func (br *multiplexedBreaker) Close() {
+	br.closer.Do(func() {
+		each(br.entries).Close()
+		close(br.signal)
+	})
+}
+
+func (br *multiplexedBreaker) trigger() Breaker {
+	go func() {
+		brs := make([]reflect.SelectCase, 0, len(br.entries))
+		for _, br := range br.entries {
+			brs = append(brs, reflect.SelectCase{Dir: reflect.SelectRecv, Chan: reflect.ValueOf(br.Done())})
+		}
+		reflect.Select(brs)
+		br.Close()
+	}()
+	return br
+}
+
 func newSignaledBreaker(signals []os.Signal) Breaker {
-	return (&signaledBreaker{newBreaker(), make(chan os.Signal, len(signals)), signals}).trigger()
+	return &signaledBreaker{newBreaker(), make(chan os.Signal, len(signals)), signals}
 }
 
 type signaledBreaker struct {
@@ -105,7 +142,7 @@ func (br *signaledBreaker) trigger() Breaker {
 }
 
 func newTimedBreaker(timeout time.Duration) Breaker {
-	return (&timedBreaker{time.NewTimer(timeout), newBreaker()}).trigger()
+	return &timedBreaker{time.NewTimer(timeout), newBreaker()}
 }
 
 type timedBreaker struct {
@@ -126,4 +163,12 @@ func (br *timedBreaker) trigger() Breaker {
 		br.Close()
 	}()
 	return br
+}
+
+type each []Breaker
+
+func (list each) Close() {
+	for _, br := range list {
+		br.Close()
+	}
 }
