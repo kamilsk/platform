@@ -9,12 +9,28 @@ import (
 	"time"
 )
 
-// Breaker ...
+// A Breaker carries a cancellation signal to break an action execution.
+//
+// Example based on github.com/kamilsk/retry package:
+//
+//     if err := retry.Retry(sync.BreakByTimeout(time.Minute), action, strategy.Limit(5)); err != nil {
+//             log.Fatal(err)
+//     }
+//
+// Example based on github.com/kamilsk/semaphore package:
+//
+//     if err := semaphore.Acquire(sync.BreakByTimeout(time.Minute), 5); err != nil {
+//             log.Fatal(err)
+//     }
+//
 type Breaker interface {
+	// Done returns a channel that's closed when a cancellation signal occurred.
 	Done() <-chan struct{}
+	// Close closes the done channel and releases resources associated with it.
 	Close()
-
-	trigger() Breaker // guarantee that the done channel will not be nil
+	// trigger is a private method to guarantee that the breakers come from
+	// this package and all of them return a valid done channel.
+	trigger() Breaker
 }
 
 // BreakByDeadline ...
