@@ -2,6 +2,7 @@ package sync_test
 
 import (
 	"context"
+	"flag"
 	"os"
 	"testing"
 	"time"
@@ -11,7 +12,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var delta = 10 * time.Millisecond
+var (
+	delta   = 10 * time.Millisecond
+	fragile = flag.Bool("all", false, "run all tests including unstable")
+)
 
 func TestBreakByDeadline(t *testing.T) {
 	t.Run("future deadline", func(t *testing.T) {
@@ -37,6 +41,9 @@ func TestBreakByDeadline(t *testing.T) {
 
 func TestBreakBySignal(t *testing.T) {
 	t.Run("with signal", func(t *testing.T) {
+		if !*fragile {
+			t.SkipNow()
+		}
 		br := BreakBySignal(os.Interrupt)
 		start := time.Now()
 		go func() {

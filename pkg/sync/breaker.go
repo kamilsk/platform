@@ -30,11 +30,11 @@ type Breaker interface {
 	// Close closes the Done channel and releases resources associated with it.
 	Close()
 	// trigger is a private method to guarantee that the breakers come from
-	// this package and all of them return a valid done channel.
+	// this package and all of them return a valid Done channel.
 	trigger() Breaker
 }
 
-// BreakByDeadline ...
+// BreakByDeadline closes the Done channel when the deadline occurs.
 func BreakByDeadline(deadline time.Time) Breaker {
 	timeout := time.Until(deadline)
 	if timeout < 0 {
@@ -43,7 +43,7 @@ func BreakByDeadline(deadline time.Time) Breaker {
 	return newTimedBreaker(timeout).trigger()
 }
 
-// BreakBySignal ...
+// BreakBySignal closes the Done channel when signals will be received.
 func BreakBySignal(sig ...os.Signal) Breaker {
 	if len(sig) == 0 {
 		return closedBreaker()
@@ -51,7 +51,7 @@ func BreakBySignal(sig ...os.Signal) Breaker {
 	return newSignaledBreaker(sig).trigger()
 }
 
-// BreakByTimeout ...
+// BreakByTimeout closes the Done channel when the timeout happens.
 func BreakByTimeout(timeout time.Duration) Breaker {
 	if timeout < 0 {
 		return closedBreaker()
