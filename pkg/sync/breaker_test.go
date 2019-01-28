@@ -14,20 +14,20 @@ import (
 var delta = 10 * time.Millisecond
 
 func TestBreakByDeadline(t *testing.T) {
-	t.Run("future", func(t *testing.T) {
+	t.Run("future deadline", func(t *testing.T) {
 		br := BreakByDeadline(time.Now().Add(5 * delta))
 		start := time.Now()
 		<-br.Done()
 		assert.WithinDuration(t, start.Add(5*delta), time.Now(), delta)
 	})
-	t.Run("past", func(t *testing.T) {
+	t.Run("passed deadline", func(t *testing.T) {
 		br := BreakByDeadline(time.Now().Add(-delta))
 		start := time.Now()
 		<-br.Done()
 		assert.WithinDuration(t, start, time.Now(), delta)
 	})
 	t.Run("close multiple times", func(t *testing.T) {
-		br := BreakByDeadline(time.Now().Add(1000 * delta))
+		br := BreakByDeadline(time.Now().Add(time.Hour))
 		fn.Repeat(br.Close, 5)
 		start := time.Now()
 		<-br.Done()
@@ -63,20 +63,20 @@ func TestBreakBySignal(t *testing.T) {
 }
 
 func TestBreakByTimeout(t *testing.T) {
-	t.Run("future", func(t *testing.T) {
+	t.Run("valid timeout", func(t *testing.T) {
 		br := BreakByTimeout(5 * delta)
 		start := time.Now()
 		<-br.Done()
 		assert.WithinDuration(t, start.Add(5*delta), time.Now(), delta)
 	})
-	t.Run("past", func(t *testing.T) {
+	t.Run("passed timeout", func(t *testing.T) {
 		br := BreakByTimeout(-delta)
 		start := time.Now()
 		<-br.Done()
 		assert.WithinDuration(t, start, time.Now(), delta)
 	})
 	t.Run("close multiple times", func(t *testing.T) {
-		br := BreakByTimeout(1000 * delta)
+		br := BreakByTimeout(time.Hour)
 		fn.Repeat(br.Close, 5)
 		start := time.Now()
 		<-br.Done()
@@ -86,7 +86,7 @@ func TestBreakByTimeout(t *testing.T) {
 
 func TestMultiplex(t *testing.T) {
 	t.Run("with breakers", func(t *testing.T) {
-		br := Multiplex(BreakByTimeout(5*delta), BreakByDeadline(time.Now().Add(1000*delta)))
+		br := Multiplex(BreakByTimeout(5*delta), BreakByDeadline(time.Now().Add(time.Hour)))
 		defer br.Close()
 		start := time.Now()
 		<-br.Done()
@@ -99,7 +99,7 @@ func TestMultiplex(t *testing.T) {
 		assert.WithinDuration(t, start, time.Now(), delta)
 	})
 	t.Run("close multiple times", func(t *testing.T) {
-		br := Multiplex(BreakByTimeout(1000 * delta))
+		br := Multiplex(BreakByTimeout(time.Hour))
 		fn.Repeat(br.Close, 5)
 		start := time.Now()
 		<-br.Done()
@@ -108,16 +108,30 @@ func TestMultiplex(t *testing.T) {
 }
 
 func TestWithContext(t *testing.T) {
-	t.Run("future", func(t *testing.T) {
-		br := BreakByTimeout(5 * delta)
-		ctx := WithContext(context.Background(), br)
+	t.Run("active breaker", func(t *testing.T) {
+		ctx := WithContext(context.Background(), BreakByTimeout(5*delta))
 		start := time.Now()
 		<-ctx.Done()
 		assert.WithinDuration(t, start.Add(5*delta), time.Now(), delta)
 	})
-	t.Run("past", func(t *testing.T) {
-		br := BreakByTimeout(-delta)
+	t.Run("closed breaker", func(t *testing.T) {
+		ctx := WithContext(context.Background(), BreakByTimeout(-delta))
+		start := time.Now()
+		<-ctx.Done()
+		assert.WithinDuration(t, start, time.Now(), delta)
+	})
+	t.Run("released breaker", func(t *testing.T) {
+		br := BreakByTimeout(time.Hour)
 		ctx := WithContext(context.Background(), br)
+		br.Close()
+		start := time.Now()
+		<-ctx.Done()
+		assert.WithinDuration(t, start, time.Now(), delta)
+	})
+	t.Run("canceled parent", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		ctx = WithContext(ctx, BreakByTimeout(time.Hour))
+		cancel()
 		start := time.Now()
 		<-ctx.Done()
 		assert.WithinDuration(t, start, time.Now(), delta)

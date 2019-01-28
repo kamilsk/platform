@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"reflect"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -13,20 +14,20 @@ import (
 //
 // Example based on github.com/kamilsk/retry package:
 //
-//     if err := retry.Retry(sync.BreakByTimeout(time.Minute), action, strategy.Limit(5)); err != nil {
+//     if err := retry.Retry(BreakByTimeout(time.Minute), action, strategy.Limit(5)); err != nil {
 //             log.Fatal(err)
 //     }
 //
 // Example based on github.com/kamilsk/semaphore package:
 //
-//     if err := semaphore.Acquire(sync.BreakByTimeout(time.Minute), 5); err != nil {
+//     if err := semaphore.Acquire(BreakByTimeout(time.Minute), 5); err != nil {
 //             log.Fatal(err)
 //     }
 //
 type Breaker interface {
 	// Done returns a channel that's closed when a cancellation signal occurred.
 	Done() <-chan struct{}
-	// Close closes the done channel and releases resources associated with it.
+	// Close closes the Done channel and releases resources associated with it.
 	Close()
 	// trigger is a private method to guarantee that the breakers come from
 	// this package and all of them return a valid done channel.
@@ -87,14 +88,17 @@ func newBreaker() *breaker {
 }
 
 type breaker struct {
-	signal chan struct{}
-	closer sync.Once
+	closer   sync.Once
+	signal   chan struct{}
+	released int32
 }
 
+// Done returns a channel that's closed when a cancellation signal occurred.
 func (br *breaker) Done() <-chan struct{} {
 	return br.signal
 }
 
+// Close closes the Done channel and releases resources associated with it.
 func (br *breaker) Close() {
 	br.closer.Do(func() { close(br.signal) })
 }
@@ -112,6 +116,7 @@ type multiplexedBreaker struct {
 	entries []Breaker
 }
 
+// Close closes the Done channel and releases resources associated with it.
 func (br *multiplexedBreaker) Close() {
 	br.closer.Do(func() {
 		each(br.entries).Close()
@@ -119,6 +124,7 @@ func (br *multiplexedBreaker) Close() {
 	})
 }
 
+// trigger starts listening all Done channels of multiplexed Breakers.
 func (br *multiplexedBreaker) trigger() Breaker {
 	go func() {
 		brs := make([]reflect.SelectCase, 0, len(br.entries))
@@ -127,6 +133,7 @@ func (br *multiplexedBreaker) trigger() Breaker {
 		}
 		reflect.Select(brs)
 		br.Close()
+		atomic.AddInt32(&br.released, 1)
 	}()
 	return br
 }
@@ -141,6 +148,7 @@ type signaledBreaker struct {
 	signals []os.Signal
 }
 
+// Close closes the Done channel and releases resources associated with it.
 func (br *signaledBreaker) Close() {
 	br.closer.Do(func() {
 		signal.Stop(br.relay)
@@ -148,24 +156,27 @@ func (br *signaledBreaker) Close() {
 	})
 }
 
+// trigger starts listening required signals to close the Done channel.
 func (br *signaledBreaker) trigger() Breaker {
 	go func() {
 		signal.Notify(br.relay, br.signals...)
 		<-br.relay
 		br.Close()
+		atomic.AddInt32(&br.released, 1)
 	}()
 	return br
 }
 
 func newTimedBreaker(timeout time.Duration) Breaker {
-	return &timedBreaker{time.NewTimer(timeout), newBreaker()}
+	return &timedBreaker{newBreaker(), time.NewTimer(timeout)}
 }
 
 type timedBreaker struct {
-	*time.Timer
 	*breaker
+	*time.Timer
 }
 
+// Close closes the Done channel and releases resources associated with it.
 func (br *timedBreaker) Close() {
 	br.closer.Do(func() {
 		br.Timer.Stop()
@@ -173,16 +184,20 @@ func (br *timedBreaker) Close() {
 	})
 }
 
+// trigger starts listening internal timer to close the Done channel.
 func (br *timedBreaker) trigger() Breaker {
 	go func() {
 		<-br.Timer.C
 		br.Close()
+		atomic.AddInt32(&br.released, 1)
 	}()
 	return br
 }
 
 type each []Breaker
 
+// Close closes all Done channels of a list of Breakers
+// and releases resources associated with them.
 func (list each) Close() {
 	for _, br := range list {
 		br.Close()
