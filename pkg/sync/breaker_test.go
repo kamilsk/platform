@@ -114,6 +114,27 @@ func TestMultiplex(t *testing.T) {
 	})
 }
 
+func TestMultiplexTwo(t *testing.T) {
+	br := MultiplexTwo(
+		BreakByDeadline(time.Now().Add(-delta)),
+		BreakByTimeout(time.Hour),
+	)
+	start := time.Now()
+	<-br.Done()
+	assert.WithinDuration(t, start, time.Now(), delta)
+}
+
+func TestMultiplexThree(t *testing.T) {
+	br := MultiplexThree(
+		BreakByDeadline(time.Now().Add(-delta)),
+		BreakBySignal(os.Kill),
+		BreakByTimeout(time.Hour),
+	)
+	start := time.Now()
+	<-br.Done()
+	assert.WithinDuration(t, start, time.Now(), delta)
+}
+
 func TestWithContext(t *testing.T) {
 	t.Run("active breaker", func(t *testing.T) {
 		ctx := WithContext(context.Background(), BreakByTimeout(5*delta))

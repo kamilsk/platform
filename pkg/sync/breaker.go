@@ -29,7 +29,7 @@ type Breaker interface {
 	Done() <-chan struct{}
 	// Close closes the Done channel and releases resources associated with it.
 	Close()
-	// trigger is a private method to guarantee that the breakers come from
+	// trigger is a private method to guarantee that the Breakers come from
 	// this package and all of them return a valid Done channel.
 	trigger() Breaker
 }
@@ -59,7 +59,7 @@ func BreakByTimeout(timeout time.Duration) Breaker {
 	return newTimedBreaker(timeout).trigger()
 }
 
-// Multiplex ...
+// Multiplex combines multiple Breakers into one.
 func Multiplex(breakers ...Breaker) Breaker {
 	if len(breakers) == 0 {
 		return closedBreaker()
@@ -67,12 +67,47 @@ func Multiplex(breakers ...Breaker) Breaker {
 	return newMultiplexedBreaker(breakers).trigger()
 }
 
-// WithContext ...
+// MultiplexTwo combines two Breakers into one.
+// This is the optimized version of more generic Multiplex.
+func MultiplexTwo(one, two Breaker) Breaker {
+	br := newBreaker()
+	go func() {
+		defer br.Close()
+		select {
+		case <-one.Done():
+		case <-two.Done():
+		}
+	}()
+	return br
+}
+
+// MultiplexThree combines three Breakers into one.
+// This is the optimized version of more generic Multiplex.
+func MultiplexThree(one, two, three Breaker) Breaker {
+	br := newBreaker()
+	go func() {
+		defer br.Close()
+		select {
+		case <-one.Done():
+		case <-two.Done():
+		case <-three.Done():
+		}
+	}()
+	return br
+}
+
+// WithContext returns a copy of the parent with a new Done channel. The returned
+// context's Done channel is closed when the passed Breaker closes its Done channel
+// or when the parent context's Done channel is closed, whichever happens first.
 func WithContext(parent context.Context, breaker Breaker) context.Context {
 	ctx, cancel := context.WithCancel(parent)
 	go func() {
-		<-breaker.Done()
-		cancel()
+		select {
+		case <-parent.Done():
+			return
+		case <-breaker.Done():
+			cancel()
+		}
 	}()
 	return ctx
 }
