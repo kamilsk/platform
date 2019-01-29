@@ -168,7 +168,7 @@ func (br *multiplexedBreaker) trigger() Breaker {
 		}
 		reflect.Select(brs)
 		br.Close()
-		atomic.AddInt32(&br.released, 1)
+		atomic.StoreInt32(&br.released, 1)
 	}()
 	return br
 }
@@ -195,9 +195,12 @@ func (br *signaledBreaker) Close() {
 func (br *signaledBreaker) trigger() Breaker {
 	go func() {
 		signal.Notify(br.relay, br.signals...)
-		<-br.relay
+		select {
+		case <-br.relay:
+		case <-br.signal:
+		}
 		br.Close()
-		atomic.AddInt32(&br.released, 1)
+		atomic.StoreInt32(&br.released, 1)
 	}()
 	return br
 }
@@ -222,9 +225,12 @@ func (br *timedBreaker) Close() {
 // trigger starts listening internal timer to close the Done channel.
 func (br *timedBreaker) trigger() Breaker {
 	go func() {
-		<-br.Timer.C
+		select {
+		case <-br.Timer.C:
+		case <-br.signal:
+		}
 		br.Close()
-		atomic.AddInt32(&br.released, 1)
+		atomic.StoreInt32(&br.released, 1)
 	}()
 	return br
 }
