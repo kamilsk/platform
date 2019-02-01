@@ -9,6 +9,22 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestSequence(t *testing.T) {
+	tests := []struct {
+		name string
+		size int
+	}{
+		{"constant", 5},
+		{"random", rand.New(rand.NewSource(time.Now().UnixNano())).Intn(1000)},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Len(t, Sequence(tc.size), tc.size)
+		})
+	}
+}
+
 func TestReducer_Average(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -121,22 +137,6 @@ func TestReducer_Sum(t *testing.T) {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
 			assert.Equal(t, tc.expected, Reduce(tc.sequence...).Sum())
-		})
-	}
-}
-
-func TestSequence(t *testing.T) {
-	tests := []struct {
-		name string
-		size int
-	}{
-		{"constant", 5},
-		{"random", rand.New(rand.NewSource(time.Now().UnixNano())).Intn(1000)},
-	}
-	for _, test := range tests {
-		tc := test
-		t.Run(test.name, func(t *testing.T) {
-			assert.Len(t, Sequence(tc.size), tc.size)
 		})
 	}
 }
