@@ -14,7 +14,7 @@ import (
 
 var (
 	delta   = 10 * time.Millisecond
-	fragile = flag.Bool("all", false, "run all tests including unstable")
+	fragile = flag.Bool("all", true, "run all tests including unstable")
 )
 
 func TestBreakByDeadline(t *testing.T) {
