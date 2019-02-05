@@ -29,6 +29,10 @@ func TestConcat(t *testing.T) {
 	}
 }
 
+// BenchmarkStringConcatenation/bytes-12         	10000000	       119 ns/op	     176 B/op	       3 allocs/op
+// BenchmarkStringConcatenation/runes-12         	10000000	       231 ns/op	     112 B/op	       3 allocs/op
+// BenchmarkStringConcatenation/concat-12        	50000000	        39.2 ns/op	      16 B/op	       1 allocs/op
+// BenchmarkStringConcatenation/join-12          	30000000	        51.2 ns/op	      16 B/op	       1 allocs/op
 func BenchmarkStringConcatenation(b *testing.B) {
 	b.Run("bytes", func(b *testing.B) {
 		var result string

@@ -14,15 +14,15 @@ import (
 //
 // Example based on github.com/kamilsk/retry package:
 //
-//     if err := retry.Retry(BreakByTimeout(time.Minute), action, strategy.Limit(5)); err != nil {
-//             log.Fatal(err)
-//     }
+//  if err := retry.Retry(BreakByTimeout(time.Minute), action, strategy.Limit(5)); err != nil {
+//  	log.Fatal(err)
+//  }
 //
 // Example based on github.com/kamilsk/semaphore package:
 //
-//     if err := semaphore.Acquire(BreakByTimeout(time.Minute), 5); err != nil {
-//             log.Fatal(err)
-//     }
+//  if err := semaphore.Acquire(BreakByTimeout(time.Minute), 5); err != nil {
+//  	log.Fatal(err)
+//  }
 //
 type Breaker interface {
 	// Done returns a channel that's closed when a cancellation signal occurred.

@@ -4,12 +4,12 @@ import "runtime"
 
 // Caller returns information about the current caller.
 //
-//     func StoreToDatabase(data Payload) error {
-//             timer := stats.NewTiming()
-//             defer timer.Send(Caller().Name)
+//  func StoreToDatabase(data Payload) error {
+//  	timer := stats.NewTiming()
+//  	defer timer.Send(Caller().Name)
 //
-//             // do something heavy
-//     }
+//  	// do something heavy
+//  }
 //
 func Caller() CallerInfo {
 	pc := make([]uintptr, 1)

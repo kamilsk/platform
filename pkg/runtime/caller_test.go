@@ -39,6 +39,9 @@ func TestCaller(t *testing.T) {
 	}
 }
 
+// BenchmarkCaller/direct_caller-12         	 5000000	       288 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkCaller/chain_caller-12          	 5000000	       298 ns/op	       0 B/op	       0 allocs/op
+// BenchmarkCaller/lambda_caller-12         	 5000000	       297 ns/op	       0 B/op	       0 allocs/op
 func BenchmarkCaller(b *testing.B) {
 	benchmarks := []struct {
 		name   string

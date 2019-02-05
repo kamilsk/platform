@@ -4,14 +4,14 @@ import "github.com/pkg/errors"
 
 // Safe runs the action and captures a panic as its error.
 //
-//     serve := make(chan error, 1)
+//  serve := make(chan error, 1)
 //
-//     go Safe(func() error {
-//             return server.ListenAndServe()
-//     }, func(err error) {
-//             serve <- errors.Wrap(err, "tried to listen and serve a connection")
-//             close(serve)
-//     })
+//  go Safe(func() error {
+//  	return server.ListenAndServe()
+//  }, func(err error) {
+//  	serve <- errors.Wrap(err, "tried to listen and serve a connection")
+//  	close(serve)
+//  })
 //
 func Safe(action func() error, closer func(error)) {
 	var err error

@@ -7,9 +7,9 @@ import (
 
 // Sequence returns an empty slice with the specified size.
 //
-//     for range Sequence(5) {
-//             // do something five times
-//     }
+//  for range Sequence(5) {
+//  	// do something five times
+//  }
 //
 func Sequence(size int) []struct{} {
 	return make([]struct{}, size)
@@ -17,11 +17,11 @@ func Sequence(size int) []struct{} {
 
 // Reduce wraps sequence to perform some aggregate operations above it.
 //
-//     func Acquire(places ...int) {
-//             for range Sequence(Reduce(places...).Sum()) {
-//                     semaphore <- struct{}{}
-//             }
-//     }
+//  func Acquire(places ...int) {
+//  	for range Sequence(Reduce(places...).Sum()) {
+//  		semaphore <- struct{}{}
+//  	}
+//  }
 //
 func Reduce(sequence ...int) interface {
 	// Average returns an average value of the sequence.
