@@ -11,9 +11,6 @@ import (
 )
 
 func TestTermination(t *testing.T) {
-	if !*fragile {
-		t.SkipNow()
-	}
 	tests := []struct {
 		name     string
 		breaker  func(cancel context.CancelFunc)
