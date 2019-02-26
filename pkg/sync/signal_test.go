@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var delta = 10 * time.Millisecond
+
 func TestTermination(t *testing.T) {
 	tests := []struct {
 		name     string
