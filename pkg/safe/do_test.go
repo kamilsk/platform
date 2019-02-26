@@ -1,10 +1,10 @@
-package sync_test
+package safe_test
 
 import (
 	"errors"
 	"testing"
 
-	. "github.com/kamilsk/platform/pkg/sync"
+	. "github.com/kamilsk/platform/pkg/safe"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -33,7 +33,7 @@ func TestSafe(t *testing.T) {
 	for _, test := range tests {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
-			assert.NotPanics(t, func() { Safe(tc.action, tc.closer) })
+			assert.NotPanics(t, func() { Do(tc.action, tc.closer) })
 		})
 	}
 }

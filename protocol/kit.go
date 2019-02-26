@@ -3,7 +3,7 @@ package protocol
 import (
 	"context"
 
-	"github.com/kamilsk/platform/pkg/sync"
+	"github.com/kamilsk/platform/pkg/safe"
 	"github.com/pkg/errors"
 )
 
@@ -11,14 +11,6 @@ import (
 type Callback struct {
 	context.Context
 	Result chan error
-}
-
-// Server represents a generic server to listen some protocol.
-type Server interface {
-	// ListenAndServe listens some protocol and serves it.
-	ListenAndServe() error
-	// Shutdown tries to do a graceful shutdown.
-	Shutdown(context.Context) error
 }
 
 // Shutdown is a channel to receive a signal to initiate graceful server shutdown.
@@ -29,7 +21,7 @@ type Shutdown chan Callback
 func Run(server Server, shutdown Shutdown) error {
 	serve := make(chan error, 1)
 
-	go sync.Safe(func() error {
+	go safe.Do(func() error {
 		return server.ListenAndServe()
 	}, func(err error) {
 		serve <- errors.Wrap(err, "tried to listen and serve a connection")

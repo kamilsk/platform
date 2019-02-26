@@ -1,4 +1,4 @@
-package sync
+package safe
 
 import "github.com/pkg/errors"
 
@@ -13,7 +13,7 @@ import "github.com/pkg/errors"
 //  	close(serve)
 //  })
 //
-func Safe(action func() error, closer func(error)) {
+func Do(action func() error, closer func(error)) {
 	var err error
 	defer func() { closer(err) }()
 	defer func() {
