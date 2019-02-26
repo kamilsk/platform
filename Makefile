@@ -8,7 +8,7 @@ deps:
 
 .PHONY: goimports
 goimports:
-	@(ls -d */ | grep -v vendor | xargs goimports --ungroup -w $$1)
+	@(ls -d */ | grep -v vendor | xargs goimports --ungroup -w $1)
 
 .PHONY: generate
 generate:
