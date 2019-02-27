@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+//go:noinline
 func callerA() CallerInfo {
 	return Caller()
 }
@@ -30,6 +31,7 @@ func TestCaller(t *testing.T) {
 		{"direct caller", callerA, "github.com/kamilsk/platform/pkg/runtime_test.callerA"},
 		{"chain caller", callerB, "github.com/kamilsk/platform/pkg/runtime_test.callerA"},
 		{"lambda caller", callerC, func() string {
+			// https://golang.org/doc/go1.12#runtime
 			if Version().Before(GoVersion{Major: 1, Minor: 12}) {
 				return "github.com/kamilsk/platform/pkg/runtime_test.callerC.func1"
 			}
