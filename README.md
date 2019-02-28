@@ -2,16 +2,16 @@
 >
 > Toolkit for all my micro service family.
 
+[![Patreon][icon_patreon]][support]
+[![GoDoc][icon_docs]][docs]
+[![License][icon_license]][license]
+
 ## Used by
 
 - [Click!][click]
 - [Forma][forma]
 - [Guard][guard]
 - [Passport][passport]
-
-[![Patreon][icon_patreon]][support]
-[![GoDoc][icon_docs]][docs]
-[![License][icon_license]][license]
 
 ---
 

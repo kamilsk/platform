@@ -16,11 +16,11 @@ func TestCaller(t *testing.T) {
 		{"direct caller", callerA, "github.com/kamilsk/platform/pkg/runtime_test.callerA"},
 		{"chain caller", callerB, "github.com/kamilsk/platform/pkg/runtime_test.callerA"},
 		{"lambda caller", callerC, func() string {
-			if Version().Before(go112.version) || !ahead(Version(), go112.release) {
-				return "github.com/kamilsk/platform/pkg/runtime_test.callerC.func1"
+			if ahead(Version(), go112) {
+				// https://golang.org/doc/go1.12#runtime
+				return "github.com/kamilsk/platform/pkg/runtime_test.callerC"
 			}
-			// https://golang.org/doc/go1.12#runtime
-			return "github.com/kamilsk/platform/pkg/runtime_test.callerC"
+			return "github.com/kamilsk/platform/pkg/runtime_test.callerC.func1"
 		}()},
 	}
 	for _, test := range tests {

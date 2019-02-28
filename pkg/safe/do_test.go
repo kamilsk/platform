@@ -21,8 +21,8 @@ func TestSafe(t *testing.T) {
 		},
 		{
 			"with panic",
-			func() error { panic(errors.New("panic")) },
-			func(err error) { assert.EqualError(t, err, "unexpected panic handled: panic") },
+			func() error { panic("test") },
+			func(err error) { assert.EqualError(t, err, "unexpected panic handled: test") },
 		},
 		{
 			"without anything",

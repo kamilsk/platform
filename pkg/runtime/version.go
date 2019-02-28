@@ -37,6 +37,12 @@ func (current GoVersion) Before(target GoVersion) bool {
 	return current.compare(target) == -1
 }
 
+// Equal returns true if the current Go version is equal to
+// the target Go version.
+func (current GoVersion) Equal(target GoVersion) bool {
+	return current.Major == target.Major && current.Minor == target.Minor && current.Patch == target.Patch
+}
+
 // Later returns true if the current Go version is later
 // then the target Go version.
 func (current GoVersion) Later(target GoVersion) bool {
