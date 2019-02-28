@@ -26,6 +26,10 @@ func TestVersion_Compare(t *testing.T) {
 	for _, test := range tests {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
+			current := Version()
+			if current.Major == 0 {
+				t.Skip("skipped for unstable versions")
+			}
 			assert.True(t, tc.compare(Version(), tc.target))
 		})
 	}
