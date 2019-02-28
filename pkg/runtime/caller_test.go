@@ -7,21 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//go:noinline
-func callerA() CallerInfo {
-	return Caller()
-}
-
-func callerB() CallerInfo {
-	return callerA()
-}
-
-func callerC() CallerInfo {
-	return func() CallerInfo {
-		return Caller()
-	}()
-}
-
 func TestCaller(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -31,14 +16,10 @@ func TestCaller(t *testing.T) {
 		{"direct caller", callerA, "github.com/kamilsk/platform/pkg/runtime_test.callerA"},
 		{"chain caller", callerB, "github.com/kamilsk/platform/pkg/runtime_test.callerA"},
 		{"lambda caller", callerC, func() string {
-			current := Version()
-			if current.Major == 0 {
-				t.Skip("skipped for unstable versions")
-			}
-			// https://golang.org/doc/go1.12#runtime
-			if current.Before(GoVersion{Major: 1, Minor: 12}) {
+			if Version().Before(go112.version) || !ahead(Version(), go112.release) {
 				return "github.com/kamilsk/platform/pkg/runtime_test.callerC.func1"
 			}
+			// https://golang.org/doc/go1.12#runtime
 			return "github.com/kamilsk/platform/pkg/runtime_test.callerC"
 		}()},
 	}
@@ -71,4 +52,19 @@ func BenchmarkCaller(b *testing.B) {
 			}
 		})
 	}
+}
+
+//go:noinline
+func callerA() CallerInfo {
+	return Caller()
+}
+
+func callerB() CallerInfo {
+	return callerA()
+}
+
+func callerC() CallerInfo {
+	return func() CallerInfo {
+		return Caller()
+	}()
 }

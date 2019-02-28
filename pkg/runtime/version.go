@@ -9,15 +9,17 @@ import (
 // Version returns information about the current Go version.
 func Version() GoVersion {
 	var version = GoVersion{Raw: runtime.Version()}
-	divided := strings.Split(strings.TrimPrefix(version.Raw, "go"), ".")
-	if len(divided) > 2 {
-		divided = divided[:3]
+	if strings.HasPrefix(version.Raw, "go") {
+		divided := strings.Split(strings.TrimPrefix(version.Raw, "go"), ".")
+		if len(divided) > 2 {
+			divided = divided[:3]
+		}
+		converted := make([]int, 3)
+		for i := range divided {
+			converted[i], _ = strconv.Atoi(divided[i])
+		}
+		version.Major, version.Minor, version.Patch = converted[0], converted[1], converted[2]
 	}
-	converted := make([]int, 3)
-	for i := range divided {
-		converted[i], _ = strconv.Atoi(divided[i])
-	}
-	version.Major, version.Minor, version.Patch = converted[0], converted[1], converted[2]
 	return version
 }
 
