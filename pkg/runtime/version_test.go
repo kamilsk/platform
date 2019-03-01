@@ -42,14 +42,13 @@ func TestVersion_Compare(t *testing.T) {
 	})
 }
 
-func ahead(current GoVersion, target struct {
+func ahead(t *testing.T, current GoVersion, target struct {
 	version GoVersion
 	release string
 }) bool {
 	if current.Equal(target.version) {
 		return true
 	}
-	// devel +61170f85e6 Thu Feb 28 00:24:56 2019 +0000
 	if !unstable(current.Raw) {
 		return current.Later(target.version)
 	}
@@ -57,6 +56,7 @@ func ahead(current GoVersion, target struct {
 	layout := "Mon Jan 02 15:04:05 2006 -0700"
 	release, _ := time.Parse(layout, target.release)
 	control, _ := time.Parse(layout, current.Raw[len(prefix):])
+	t.Log(target.release, release, current.Raw[len(prefix):], control)
 	return control.After(release)
 }
 
