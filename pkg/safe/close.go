@@ -24,3 +24,11 @@ func Close(closer io.Closer, cleaners ...func(error)) {
 		}
 	}
 }
+
+// Releaser implements the io.Closer interface.
+type Releaser func() error
+
+// Close releases resources associated with the Releaser.
+func (fn Releaser) Close() error {
+	return fn()
+}
