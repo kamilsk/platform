@@ -53,10 +53,10 @@ func ahead(t *testing.T, current GoVersion, target struct {
 		return current.Later(target.version)
 	}
 	prefix := "devel +61170f85e6 "
-	layout := "Mon Jan 02 15:04:05 2006 -0700"
+	layout := "Mon Jan 2 15:04:05 2006 -0700"
 	release, _ := time.Parse(layout, target.release)
 	control, _ := time.Parse(layout, current.Raw[len(prefix):])
-	t.Log(target.release, release, current.Raw[len(prefix):], control)
+	t.Log(target.release, "->", release, "<->", control, "<-", current.Raw[len(prefix):])
 	return control.After(release)
 }
 

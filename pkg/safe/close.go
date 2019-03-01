@@ -25,7 +25,16 @@ func Close(closer io.Closer, cleaners ...func(error)) {
 	}
 }
 
-// Releaser implements the io.Closer interface.
+// The Releaser type is an adapter to allow the use of ordinary functions
+// as the io.Closer interface. If fn is a function with the appropriate signature,
+// Releaser(fn) is a Closer that calls fn. It can be used by the Close function.
+//
+//  ticket, err := semaphore.Acquire(breaker.BreakByTimeout(time.Second))
+//  if err != nil {
+//  	log.Fatal(err)
+//  }
+//  defer Close(Releaser(ticket), func(err error) { log.Println(err) })
+//
 type Releaser func() error
 
 // Close releases resources associated with the Releaser.
