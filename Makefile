@@ -10,16 +10,16 @@ update:
 	@(go get -u)
 
 
-.PHONY: goimports
-goimports:
-	@(ls -d */ | grep -v vendor | xargs goimports --ungroup -w $1)
+.PHONY: format
+format:
+	@(goimports -ungroup -w .)
 
 .PHONY: generate
 generate:
 	@(go generate ./...)
 
 .PHONY: refresh
-refresh: generate goimports
+refresh: generate format
 
 
 .PHONY: test
@@ -49,8 +49,7 @@ test-example:                 #| Runs example tests with coverage and collects t
 
 .PHONY: sync
 sync:
-	@(git stash && git pull --rebase && git stash pop)
-
+	@(git stash && git pull --rebase && git stash pop || true)
 
 .PHONY: upgrade
 upgrade: sync update deps refresh test-with-coverage-formatted
