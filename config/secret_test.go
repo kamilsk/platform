@@ -33,7 +33,7 @@ func TestSecret_Printing(t *testing.T) {
 		{
 			"print by `%s`",
 			func(pass password) ([]byte, error) {
-				str := fmt.Sprintf("%s", pass.Value)
+				str := fmt.Sprintf("%s", pass.Value) //nolint:gosimple
 				return []byte(str), nil
 			},
 		},

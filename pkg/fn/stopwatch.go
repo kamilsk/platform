@@ -11,5 +11,5 @@ import "time"
 func Stopwatch(fn func()) time.Duration {
 	start := time.Now()
 	fn()
-	return time.Now().Sub(start)
+	return time.Since(start)
 }

@@ -16,7 +16,7 @@ func TestStopwatch(t *testing.T) {
 	duration := Stopwatch(func() {
 		start := time.Now()
 		time.Sleep(delta)
-		compare = time.Now().Sub(start)
+		compare = time.Since(start)
 	})
 
 	assert.True(t, compare < duration)
