@@ -1,12 +1,6 @@
 package sandbox
 
-import (
-	"context"
-
-	"github.com/kamilsk/platform/pkg/safe"
-	"github.com/kamilsk/platform/protocol"
-	"github.com/pkg/errors"
-)
+import "context"
 
 type ChainedContext interface {
 	context.Context
@@ -15,8 +9,15 @@ type ChainedContext interface {
 	Next() ChainedContext
 }
 
-func New(ctx context.Context) ChainedContext {
+func Chain(ctx context.Context) ChainedContext {
 	return &chainedContext{Context: ctx}
+}
+
+func From(ctx context.Context) ChainedContext {
+	if chain, is := ctx.(ChainedContext); is {
+		return chain
+	}
+	return Chain(ctx).Add(context.TODO())
 }
 
 type chainedContext struct {
@@ -28,6 +29,7 @@ func (chain *chainedContext) Add(ctx context.Context) ChainedContext {
 	var next, prev = &chain.next, &chain.next
 	for *next != nil {
 		*prev = *next
+		next = &(*next).next
 	}
 	*prev = &chainedContext{Context: ctx}
 	return chain
@@ -35,26 +37,4 @@ func (chain *chainedContext) Add(ctx context.Context) ChainedContext {
 
 func (chain *chainedContext) Next() ChainedContext {
 	return chain.next
-}
-
-func Run(ctx context.Context, server protocol.Server) error {
-	serve := make(chan error, 1)
-
-	go safe.Do(func() error {
-		return server.ListenAndServe()
-	}, func(err error) {
-		serve <- errors.Wrap(err, "tried to listen and serve a connection")
-		close(serve)
-	})
-
-	select {
-	case <-ctx.Done():
-		if chain, is := ctx.(ChainedContext); is {
-			ctx = chain.Next()
-		}
-		shutdownErr := errors.Wrap(server.Shutdown(ctx), "tried to shutting down the server")
-		return shutdownErr
-	case serveErr := <-serve:
-		return serveErr
-	}
 }
