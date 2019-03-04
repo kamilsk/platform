@@ -7,6 +7,7 @@ type ChainedContext interface {
 
 	Add(context.Context) ChainedContext
 	Next() ChainedContext
+	Origin() context.Context
 }
 
 func Chain(ctx context.Context) ChainedContext {
@@ -37,4 +38,8 @@ func (chain *chainedContext) Add(ctx context.Context) ChainedContext {
 
 func (chain *chainedContext) Next() ChainedContext {
 	return chain.next
+}
+
+func (chain *chainedContext) Origin() context.Context {
+	return chain.Context
 }
