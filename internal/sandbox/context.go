@@ -11,7 +11,7 @@ type ChainedContext interface {
 }
 
 func Chain(ctx context.Context) ChainedContext {
-	return &chainedContext{Context: ctx}
+	return &node{Context: ctx}
 }
 
 func From(ctx context.Context) ChainedContext {
@@ -21,25 +21,24 @@ func From(ctx context.Context) ChainedContext {
 	return Chain(ctx).Add(context.TODO())
 }
 
-type chainedContext struct {
+type node struct {
 	context.Context
-	next *chainedContext
+	next *node
 }
 
-func (chain *chainedContext) Add(ctx context.Context) ChainedContext {
-	var next, prev = &chain.next, &chain.next
+func (chain *node) Add(ctx context.Context) ChainedContext {
+	next := &chain.next
 	for *next != nil {
-		*prev = *next
 		next = &(*next).next
 	}
-	*prev = &chainedContext{Context: ctx}
+	*next = &node{Context: ctx}
 	return chain
 }
 
-func (chain *chainedContext) Next() ChainedContext {
+func (chain *node) Next() ChainedContext {
 	return chain.next
 }
 
-func (chain *chainedContext) Origin() context.Context {
+func (chain *node) Origin() context.Context {
 	return chain.Context
 }
