@@ -2,12 +2,31 @@ package runtime_test
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/kamilsk/platform/pkg/runtime"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestCaller(t *testing.T) {
+	ahead := func(t *testing.T, current GoVersion, target struct {
+		version GoVersion
+		release string
+	}) bool {
+		if current.Equal(target.version) {
+			return true
+		}
+		if !unstable(current.Raw) {
+			return current.Later(target.version)
+		}
+		prefix := "devel +61170f85e6 "
+		layout := "Mon Jan 2 15:04:05 2006 -0700"
+		release, _ := time.Parse(layout, target.release)
+		control, _ := time.Parse(layout, current.Raw[len(prefix):])
+		t.Log(target.release, "->", release, "<->", control, "<-", current.Raw[len(prefix):])
+		return control.After(release)
+	}
+
 	tests := []struct {
 		name     string
 		caller   func() CallerInfo

@@ -11,9 +11,6 @@ func Version() GoVersion {
 	var version = GoVersion{Raw: runtime.Version()}
 	if strings.HasPrefix(version.Raw, "go") {
 		divided := strings.Split(strings.TrimPrefix(version.Raw, "go"), ".")
-		if len(divided) > 2 {
-			divided = divided[:3]
-		}
 		converted := make([]int, 3)
 		for i := range divided {
 			converted[i], _ = strconv.Atoi(divided[i])

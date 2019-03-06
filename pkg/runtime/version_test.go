@@ -3,13 +3,17 @@ package runtime_test
 import (
 	"strings"
 	"testing"
-	"time"
 
 	. "github.com/kamilsk/platform/pkg/runtime"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestVersion_Compare(t *testing.T) {
+	bump := func(version GoVersion) GoVersion {
+		version.Minor++
+		return version
+	}
+
 	version := Version()
 	if unstable(version.Raw) {
 		version.Major, version.Minor, version.Patch, version.Raw = 1, 12, 0, "go1.12"
@@ -21,6 +25,7 @@ func TestVersion_Compare(t *testing.T) {
 		compare func(GoVersion, GoVersion) bool
 	}{
 		{"before", GoVersion{Major: 2}, GoVersion.Before},
+		{"closely", bump(version), GoVersion.Before},
 		{"later", GoVersion{Major: 1}, GoVersion.Later},
 		{"much later", GoVersion{}, GoVersion.Later},
 		{"equal", version, GoVersion.Equal},
@@ -40,24 +45,6 @@ func TestVersion_Compare(t *testing.T) {
 		assert.True(t, v2.Later(v1) && v2.Before(v3))
 		assert.True(t, !base.Later(base) && !base.Before(base))
 	})
-}
-
-func ahead(t *testing.T, current GoVersion, target struct {
-	version GoVersion
-	release string
-}) bool {
-	if current.Equal(target.version) {
-		return true
-	}
-	if !unstable(current.Raw) {
-		return current.Later(target.version)
-	}
-	prefix := "devel +61170f85e6 "
-	layout := "Mon Jan 2 15:04:05 2006 -0700"
-	release, _ := time.Parse(layout, target.release)
-	control, _ := time.Parse(layout, current.Raw[len(prefix):])
-	t.Log(target.release, "->", release, "<->", control, "<-", current.Raw[len(prefix):])
-	return control.After(release)
 }
 
 func unstable(version string) bool {
