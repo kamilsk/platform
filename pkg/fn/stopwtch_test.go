@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var delta = 10 * time.Millisecond
+const delta = 10 * time.Millisecond
 
 func TestStopwatch(t *testing.T) {
 	var compare time.Duration
