@@ -3,6 +3,9 @@
 > Toolkit for all my micro service family.
 
 [![Patreon][icon_patreon]][support]
+[![Build][icon_build]][build]
+[![Quality][icon_quality]][quality]
+[![Coverage][icon_coverage]][quality]
 [![GoDoc][icon_docs]][docs]
 [![License][icon_license]][license]
 
