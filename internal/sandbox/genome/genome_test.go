@@ -154,15 +154,21 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-// BenchmarkDelete/presented,_first-4         	20000000	        51.3 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/presented,_center-4        	30000000	        47.3 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/presented,_last-4          	30000000	        48.9 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/alternative,_first-4       	20000000	        52.0 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/alternative,_center-4      	30000000	        47.5 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/alternative,_last-4        	30000000	        46.9 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_first-4         	20000000	        61.3 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_center-4        	30000000	        47.6 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_last-4          	30000000	        48.5 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_first-4       	20000000	        51.8 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_center-4      	30000000	        47.6 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_last-4        	30000000	        46.7 ns/op	      80 B/op	       1 allocs/op
 // BenchmarkDelete/unstable,_first-4          	30000000	        43.3 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/unstable,_center-4         	30000000	        43.3 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/unstable,_last-4           	30000000	        43.4 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable,_center-4         	30000000	        46.0 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable,_last-4           	30000000	        44.9 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/gc_safe,_first-4           	20000000	        73.6 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/gc_safe,_center-4          	20000000	        65.6 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/gc_safe,_last-4            	30000000	        52.6 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable_gc_safe,_first-4  	30000000	        43.8 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable_gc_safe,_center-4 	30000000	        44.1 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable_gc_safe,_last-4   	30000000	        43.9 ns/op	      80 B/op	       1 allocs/op
 func BenchmarkDelete(b *testing.B) {
 	benchmarks := []struct {
 		name      string
@@ -174,6 +180,18 @@ func BenchmarkDelete(b *testing.B) {
 			last := len(src) - 1
 			src[i] = src[last]
 			return src[:last]
+		}},
+		{"gc safe", func(src []T, i int) []T {
+			copy(src[i:], src[i+1:])
+			last := len(src) - 1
+			src[last] = 0 // nil for pointers
+			return src[:last]
+		}},
+		{"unstable gc safe", func(src []T, i int) []T {
+			last := len(src) - 1
+			src[i] = src[last]
+			src[last] = 0 // nil for pointers
+			return src
 		}},
 	}
 	for _, bm := range benchmarks {
