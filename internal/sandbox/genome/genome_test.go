@@ -253,3 +253,46 @@ func TestExpand(t *testing.T) {
 		})
 	}
 }
+
+func TestExtend(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      []T
+		size     int
+		expected []T
+	}{
+		{"normal case", []T{3, 2, 1}, 1, []T{3, 2, 1, 0}},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, Extend(tc.src, tc.size))
+		})
+	}
+}
+
+// BenchmarkExtend/presented-4         	20000000	        55.7 ns/op	      96 B/op	       1 allocs/op
+// BenchmarkExtend/alternative-4       	20000000	        59.1 ns/op	      96 B/op	       1 allocs/op
+func BenchmarkExtend(b *testing.B) {
+	benchmarks := []struct {
+		name      string
+		algorithm func([]T, int) []T
+	}{
+		{"presented", Extend},
+		{"alternative", func(src []T, size int) []T {
+			extended := make([]T, len(src)+size)
+			copy(extended, src)
+			return extended
+		}},
+	}
+	for _, bm := range benchmarks {
+		bm := bm
+		b.Run(bm.name, func(b *testing.B) {
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_ = Extend(make([]T, 1), 10)
+			}
+		})
+	}
+}
