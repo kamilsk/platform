@@ -66,3 +66,37 @@ func TestCut(t *testing.T) {
 		})
 	}
 }
+
+func TestDelete(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      []T
+		position int
+		expected []T
+	}{
+		{
+			"first",
+			[]T{1, 2, 3},
+			0,
+			[]T{2, 3},
+		},
+		{
+			"center",
+			[]T{1, 2, 3},
+			1,
+			[]T{1, 3},
+		},
+		{
+			"last",
+			[]T{1, 2, 3},
+			2,
+			[]T{1, 2},
+		},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, Delete(tc.src, tc.position))
+		})
+	}
+}
