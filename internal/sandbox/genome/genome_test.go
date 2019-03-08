@@ -92,6 +92,34 @@ func TestCut(t *testing.T) {
 	}
 }
 
+// BenchmarkCut/presented-4         	30000000	        47.7 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkCut/gc_safe-4           	30000000	        49.8 ns/op	      80 B/op	       1 allocs/op
+func BenchmarkCut(b *testing.B) {
+	benchmarks := []struct {
+		name      string
+		algorithm func([]T, int, int) []T
+	}{
+		{"presented", Cut},
+		{"gc safe", func(src []T, from, to int) []T {
+			copy(src[from:], src[to:])
+			for k, n := len(src)-to+from, len(src); k < n; k++ {
+				src[k] = 0 // nil for pointers
+			}
+			return src[:len(src)-to+from]
+		}},
+	}
+	for _, bm := range benchmarks {
+		bm := bm
+		b.Run(bm.name, func(b *testing.B) {
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_ = bm.algorithm(make([]T, 10), 4, 6)
+			}
+		})
+	}
+}
+
 func TestDelete(t *testing.T) {
 	tests := []struct {
 		name     string
