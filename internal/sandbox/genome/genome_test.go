@@ -126,12 +126,15 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-// BenchmarkDelete/presented,_first-4         	20000000	        59.8 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/presented,_center-4        	30000000	        47.1 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/presented,_last-4          	30000000	        49.2 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/alternative,_first-4       	30000000	        51.3 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_first-4         	20000000	        51.3 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_center-4        	30000000	        47.3 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_last-4          	30000000	        48.9 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_first-4       	20000000	        52.0 ns/op	      80 B/op	       1 allocs/op
 // BenchmarkDelete/alternative,_center-4      	30000000	        47.5 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/alternative,_last-4        	30000000	        48.2 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_last-4        	30000000	        46.9 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable,_first-4          	30000000	        43.3 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable,_center-4         	30000000	        43.3 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable,_last-4           	30000000	        43.4 ns/op	      80 B/op	       1 allocs/op
 func BenchmarkDelete(b *testing.B) {
 	benchmarks := []struct {
 		name      string
@@ -139,6 +142,11 @@ func BenchmarkDelete(b *testing.B) {
 	}{
 		{"presented", Delete},
 		{"alternative", func(src []T, i int) []T { return src[:i+copy(src[i:], src[i+1:])] }},
+		{"unstable", func(src []T, i int) []T {
+			last := len(src) - 1
+			src[i] = src[last]
+			return src[:last]
+		}},
 	}
 	for _, bm := range benchmarks {
 		bm := bm
