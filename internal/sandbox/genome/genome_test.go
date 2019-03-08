@@ -125,3 +125,43 @@ func TestDelete(t *testing.T) {
 		})
 	}
 }
+
+// BenchmarkDelete/presented,_first-4         	20000000	        59.8 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_center-4        	30000000	        47.1 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_last-4          	30000000	        49.2 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_first-4       	30000000	        51.3 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_center-4      	30000000	        47.5 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_last-4        	30000000	        48.2 ns/op	      80 B/op	       1 allocs/op
+func BenchmarkDelete(b *testing.B) {
+	benchmarks := []struct {
+		name      string
+		algorithm func([]T, int) []T
+	}{
+		{"presented", Delete},
+		{"alternative", func(src []T, i int) []T { return src[:i+copy(src[i:], src[i+1:])] }},
+	}
+	for _, bm := range benchmarks {
+		bm := bm
+		b.Run(bm.name+", first", func(b *testing.B) {
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_ = bm.algorithm(make([]T, 10), 0)
+			}
+		})
+		b.Run(bm.name+", center", func(b *testing.B) {
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_ = bm.algorithm(make([]T, 10), 5)
+			}
+		})
+		b.Run(bm.name+", last", func(b *testing.B) {
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_ = bm.algorithm(make([]T, 10), 9)
+			}
+		})
+	}
+}
