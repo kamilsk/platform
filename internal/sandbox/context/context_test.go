@@ -1,10 +1,10 @@
-package sandbox_test
+package context_test
 
 import (
 	"context"
 	"testing"
 
-	. "github.com/kamilsk/platform/internal/sandbox"
+	. "github.com/kamilsk/platform/internal/sandbox/context"
 	"github.com/stretchr/testify/assert"
 )
 
