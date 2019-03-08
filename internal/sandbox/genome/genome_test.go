@@ -219,3 +219,37 @@ func BenchmarkDelete(b *testing.B) {
 		})
 	}
 }
+
+func TestExpand(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      []T
+		at, size int
+		expected []T
+	}{
+		{
+			"at the beginning",
+			[]T{1, 2, 3},
+			0, 2,
+			[]T{0, 0, 1, 2, 3},
+		},
+		{
+			"at the center",
+			[]T{1, 2, 3},
+			2, 2,
+			[]T{1, 2, 0, 0, 3},
+		},
+		{
+			"at the end",
+			[]T{1, 2, 3},
+			3, 2,
+			[]T{1, 2, 3, 0, 0},
+		},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, Expand(tc.src, tc.at, tc.size))
+		})
+	}
+}
