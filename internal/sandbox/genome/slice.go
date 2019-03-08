@@ -2,12 +2,12 @@ package genome
 
 type T int64
 
-func Copy(origin []T) []T {
-	if origin == nil {
+func Copy(src []T) []T {
+	if src == nil {
 		return nil
 	}
-	replica := make([]T, len(origin))
-	copy(replica, origin)
+	replica := make([]T, len(src))
+	copy(replica, src)
 	return replica
 }
 
