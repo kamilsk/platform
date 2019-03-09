@@ -29,3 +29,12 @@ func Insert(dst []T, t T, at int) []T {
 func InsertVector(dst []T, v []T, at int) []T {
 	return append(dst[:at], append(v, dst[at:]...)...)
 }
+
+func Push(dst []T, t T) []T {
+	return append(dst, t)
+}
+
+func Pop(dst []T) (T, []T) {
+	last := len(dst) - 1
+	return dst[last], dst[:last]
+}

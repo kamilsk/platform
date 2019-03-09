@@ -323,7 +323,7 @@ func BenchmarkExtend(b *testing.B) {
 }
 
 //
-// Insert
+// Insert, InsertVector
 //
 
 func InsertV2(dst []T, t T, at int) []T {
@@ -394,10 +394,6 @@ func BenchmarkInsert(b *testing.B) {
 	}
 }
 
-//
-// InsertVector
-//
-
 func TestInsertVector(t *testing.T) {
 	tests := []struct {
 		name string
@@ -415,4 +411,19 @@ func TestInsertVector(t *testing.T) {
 			assert.Equal(t, tc.v, InsertVector(tc.dst, tc.v, tc.at)[tc.at:tc.at+len(tc.v)])
 		})
 	}
+}
+
+//
+// Push, Pop
+//
+
+func TestPush(t *testing.T) {
+	stack := Push([]T{1, 2}, 3)
+	assert.Equal(t, []T{1, 2, 3}, stack)
+}
+
+func TestPop(t *testing.T) {
+	el, stack := Pop([]T{1, 2, 3})
+	assert.Equal(t, []T{1, 2}, stack)
+	assert.Equal(t, T(3), el)
 }
