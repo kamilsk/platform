@@ -418,12 +418,27 @@ func TestInsertVector(t *testing.T) {
 //
 
 func TestPush(t *testing.T) {
-	stack := Push([]T{1, 2}, 3)
-	assert.Equal(t, []T{1, 2, 3}, stack)
+	tt := Push([]T{1, 2}, 3)
+	assert.Equal(t, []T{1, 2, 3}, tt)
 }
 
 func TestPop(t *testing.T) {
-	el, stack := Pop([]T{1, 2, 3})
-	assert.Equal(t, []T{1, 2}, stack)
+	el, tt := Pop([]T{1, 2, 3})
 	assert.Equal(t, T(3), el)
+	assert.Equal(t, []T{1, 2}, tt)
+}
+
+//
+// Unshift, Shift
+//
+
+func TestUnshift(t *testing.T) {
+	tt := Unshift([]T{2, 3}, 1)
+	assert.Equal(t, []T{1, 2, 3}, tt)
+}
+
+func TestShift(t *testing.T) {
+	el, tt := Shift([]T{1, 2, 3})
+	assert.Equal(t, T(1), el)
+	assert.Equal(t, []T{2, 3}, tt)
 }

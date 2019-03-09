@@ -38,3 +38,11 @@ func Pop(dst []T) (T, []T) {
 	last := len(dst) - 1
 	return dst[last], dst[:last]
 }
+
+func Unshift(dst []T, t T) []T {
+	return append([]T{t}, dst...)
+}
+
+func Shift(dst []T) (T, []T) {
+	return dst[0], dst[1:]
+}
