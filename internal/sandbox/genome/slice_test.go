@@ -55,6 +55,14 @@ func BenchmarkCopy(b *testing.B) {
 }
 
 func TestCut(t *testing.T) {
+	gcSafe := func(src []T, from, to int) []T {
+		copy(src[from:], src[to:])
+		for k, n := len(src)-to+from, len(src); k < n; k++ {
+			src[k] = 0 // nil for pointers
+		}
+		return src[:len(src)-to+from]
+	}
+
 	tests := []struct {
 		name     string
 		origin   []T
@@ -83,7 +91,9 @@ func TestCut(t *testing.T) {
 	for _, test := range tests {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, tc.expected, Cut(tc.origin, tc.from, tc.to))
+			assert.Equal(t, tc.expected, Cut(Copy(tc.origin), tc.from, tc.to))
+
+			assert.Equal(t, tc.expected, gcSafe(Copy(tc.origin), tc.from, tc.to))
 		})
 	}
 }
@@ -117,6 +127,14 @@ func BenchmarkCut(b *testing.B) {
 }
 
 func TestDelete(t *testing.T) {
+	alternative := func(src []T, i int) []T { return src[:i+copy(src[i:], src[i+1:])] }
+	gcSafe := func(src []T, i int) []T {
+		copy(src[i:], src[i+1:])
+		last := len(src) - 1
+		src[last] = 0 // nil for pointers
+		return src[:last]
+	}
+
 	tests := []struct {
 		name     string
 		src      []T
@@ -145,7 +163,10 @@ func TestDelete(t *testing.T) {
 	for _, test := range tests {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
-			assert.Equal(t, tc.expected, Delete(tc.src, tc.position))
+			assert.Equal(t, tc.expected, Delete(Copy(tc.src), tc.position))
+
+			assert.Equal(t, tc.expected, alternative(Copy(tc.src), tc.position))
+			assert.Equal(t, tc.expected, gcSafe(Copy(tc.src), tc.position))
 		})
 	}
 }
@@ -226,20 +247,20 @@ func TestExpand(t *testing.T) {
 		{
 			"head",
 			[]T{1, 2, 3},
-			0, 2,
-			[]T{0, 0, 1, 2, 3},
+			0, 1,
+			[]T{0, 1, 2, 3},
 		},
 		{
 			"center",
 			[]T{1, 2, 3},
-			2, 2,
-			[]T{1, 2, 0, 0, 3},
+			2, 1,
+			[]T{1, 2, 0, 3},
 		},
 		{
 			"tail",
 			[]T{1, 2, 3},
-			3, 2,
-			[]T{1, 2, 3, 0, 0},
+			3, 1,
+			[]T{1, 2, 3, 0},
 		},
 	}
 	for _, test := range tests {
@@ -251,6 +272,12 @@ func TestExpand(t *testing.T) {
 }
 
 func TestExtend(t *testing.T) {
+	alternative := func(src []T, size int) []T {
+		extended := make([]T, len(src)+size)
+		copy(extended, src)
+		return extended
+	}
+
 	tests := []struct {
 		name     string
 		src      []T
@@ -263,6 +290,8 @@ func TestExtend(t *testing.T) {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
 			assert.Equal(t, tc.expected, Extend(tc.src, tc.size))
+
+			assert.Equal(t, tc.expected, alternative(tc.src, tc.size))
 		})
 	}
 }
