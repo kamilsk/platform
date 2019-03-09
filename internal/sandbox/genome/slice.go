@@ -1,5 +1,7 @@
 package genome
 
+import "math/rand"
+
 func Copy(src []T) []T {
 	replica := make([]T, len(src))
 	copy(replica, src)
@@ -72,5 +74,12 @@ func FilterByValue(src []T, filter func(T) bool) []T {
 func Reverse(src []T) {
 	for left, right := 0, len(src)-1; left < right; left, right = left+1, right-1 {
 		src[left], src[right] = src[right], src[left]
+	}
+}
+
+func Shuffle(src []T, rand *rand.Rand) {
+	for i := len(src) - 1; i > 0; i-- {
+		j := rand.Intn(i + 1)
+		src[i], src[j] = src[j], src[i]
 	}
 }

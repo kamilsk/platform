@@ -1,7 +1,9 @@
 package genome_test
 
 import (
+	"math/rand"
 	"testing"
+	"time"
 
 	. "github.com/kamilsk/platform/internal/sandbox/genome"
 	"github.com/stretchr/testify/assert"
@@ -477,7 +479,7 @@ func TestFilter(t *testing.T) {
 }
 
 //
-// Reverse
+// Reverse, Shuffle
 //
 
 func TestReverse(t *testing.T) {
@@ -497,4 +499,12 @@ func TestReverse(t *testing.T) {
 			assert.Equal(t, tc.expected, tc.src)
 		})
 	}
+}
+
+func TestShuffle(t *testing.T) {
+	origin := []T{0, 1, 2, 3, 4, 5, 6, 7, 8, 9}
+	src := append([]T(nil), origin...)
+	assert.Equal(t, origin, src)
+	Shuffle(src, rand.New(rand.NewSource(time.Now().UnixNano())))
+	assert.NotEqual(t, origin, src)
 }
