@@ -442,3 +442,36 @@ func TestShift(t *testing.T) {
 	assert.Equal(t, T(1), el)
 	assert.Equal(t, []T{2, 3}, tt)
 }
+
+//
+// Filter
+//
+
+func TestFilter(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      []T
+		filter   func(int, T) bool
+		expected []T
+	}{
+		{"even key", []T{1, 2, 3, 4}, func(i int, _ T) bool { return i%2 == 0 }, []T{1, 3}},
+		{"odd value", []T{1, 2, 3, 4}, func(_ int, t T) bool { return t%2 != 0 }, []T{1, 3}},
+		{"combination", []T{1, 2, 3, 4}, func(i int, t T) bool { return i%2 == 0 && t%2 != 0 }, []T{1, 3}},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, Filter(tc.src, tc.filter))
+		})
+	}
+	t.Run("filter by key", func(t *testing.T) {
+		assert.Equal(t,
+			Filter([]T{1, 2, 3, 4}, func(i int, _ T) bool { return i%2 == 0 }),
+			FilterByKey([]T{1, 2, 3, 4}, func(i int) bool { return i%2 == 0 }))
+	})
+	t.Run("filter by value", func(t *testing.T) {
+		assert.Equal(t,
+			Filter([]T{1, 2, 3, 4}, func(_ int, t T) bool { return t%2 != 0 }),
+			FilterByValue([]T{1, 2, 3, 4}, func(t T) bool { return t%2 != 0 }))
+	})
+}

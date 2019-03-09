@@ -46,3 +46,25 @@ func Unshift(dst []T, t T) []T {
 func Shift(dst []T) (T, []T) {
 	return dst[0], dst[1:]
 }
+
+func Filter(src []T, filter func(int, T) bool) []T {
+	var def T
+	filtered := src[:0]
+	for i, t := range src {
+		if filter(i, t) {
+			filtered = append(filtered, t)
+		}
+	}
+	for i, total := len(filtered), len(src); i < total; i++ {
+		src[i] = def
+	}
+	return filtered
+}
+
+func FilterByKey(src []T, filter func(int) bool) []T {
+	return Filter(src, func(i int, _ T) bool { return filter(i) })
+}
+
+func FilterByValue(src []T, filter func(T) bool) []T {
+	return Filter(src, func(_ int, t T) bool { return filter(t) })
+}
