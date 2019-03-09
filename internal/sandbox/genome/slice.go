@@ -83,3 +83,11 @@ func Shuffle(src []T, rand *rand.Rand) {
 		src[i], src[j] = src[j], src[i]
 	}
 }
+
+func Batching(src []T, size int) [][]T {
+	batches := make([][]T, 0, 4)
+	for size < len(src) {
+		src, batches = src[size:], append(batches, src[:size:size])
+	}
+	return append(batches, src)
+}

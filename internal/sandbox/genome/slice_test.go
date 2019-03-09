@@ -6,6 +6,7 @@ import (
 	"time"
 
 	. "github.com/kamilsk/platform/internal/sandbox/genome"
+	"github.com/kamilsk/platform/pkg/math"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -507,4 +508,61 @@ func TestShuffle(t *testing.T) {
 	assert.Equal(t, origin, src)
 	Shuffle(src, rand.New(rand.NewSource(time.Now().UnixNano())))
 	assert.NotEqual(t, origin, src)
+}
+
+//
+// Batching
+//
+
+func TestBatching(t *testing.T) {
+	tests := []struct {
+		name        string
+		size, batch int
+		expected    [][]T
+	}{
+		{"empty", 0, 7, [][]T{{}}},
+		{"less", 5, 7, [][]T{make([]T, 5)}},
+		{"equal", 7, 7, [][]T{make([]T, 7)}},
+		{"greater", 10, 7, [][]T{make([]T, 7), make([]T, 3)}},
+		{"multiply", 21, 7, [][]T{make([]T, 7), make([]T, 7), make([]T, 7)}},
+		{"common", 17, 7, [][]T{make([]T, 7), make([]T, 7), make([]T, 3)}},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, tc.expected, Batching(make([]T, tc.size), tc.batch))
+		})
+	}
+}
+
+// BenchmarkBatching/generic-4         	  200000	      5324 ns/op	     368 B/op	       5 allocs/op
+// BenchmarkBatching/genome-4          	  200000	      6280 ns/op	    1648 B/op	       8 allocs/op
+func BenchmarkBatching(b *testing.B) {
+	target, batch := make([]T, 10000), 500
+	b.Run("generic", func(b *testing.B) {
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			var counter int
+			for step, end := range math.BatchSequence(len(target), batch) {
+				for range target[batch*step : end] {
+					counter++
+				}
+			}
+			assert.Equal(b, len(target), counter)
+		}
+	})
+	b.Run("genome", func(b *testing.B) {
+		b.ReportAllocs()
+		b.ResetTimer()
+		for i := 0; i < b.N; i++ {
+			var counter int
+			for _, batch := range Batching(target, batch) {
+				for range batch {
+					counter++
+				}
+			}
+			assert.Equal(b, len(target), counter)
+		}
+	})
 }
