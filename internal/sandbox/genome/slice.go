@@ -25,3 +25,7 @@ func Extend(src []T, size int) []T {
 func Insert(dst []T, t T, at int) []T {
 	return append(dst[:at], append([]T{t}, dst[at:]...)...)
 }
+
+func InsertVector(dst []T, v []T, at int) []T {
+	return append(dst[:at], append(v, dst[at:]...)...)
+}

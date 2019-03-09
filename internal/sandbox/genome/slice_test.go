@@ -322,68 +322,51 @@ func BenchmarkExtend(b *testing.B) {
 	}
 }
 
-func TestInsert(t *testing.T) {
-	alternative := func(dst []T, t T, at int) []T {
-		dst = append(dst, 0)
-		copy(dst[at+1:], dst[at:])
-		dst[at] = t
-		return dst
-	}
+//
+// Insert
+//
 
+func InsertV2(dst []T, t T, at int) []T {
+	var def T
+	dst = append(dst, def)
+	copy(dst[at+1:], dst[at:])
+	dst[at] = t
+	return dst
+}
+
+func TestInsert(t *testing.T) {
 	tests := []struct {
 		name string
 		dst  []T
-		x    T
+		t    T
 		at   int
 	}{
-		{
-			"head",
-			[]T{2, 3},
-			1,
-			0,
-		},
-		{
-			"center",
-			[]T{1, 3},
-			2,
-			1,
-		},
-		{
-			"tail",
-			[]T{1, 2},
-			3,
-			2,
-		},
+		{"head", []T{2, 3}, 1, 0},
+		{"center", []T{1, 3}, 2, 1},
+		{"tail", []T{1, 2}, 3, 2},
 	}
 	for _, test := range tests {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
-			assert.Len(t, Insert(tc.dst, tc.x, tc.at), len(tc.dst)+1)
-			assert.Equal(t, tc.x, Insert(tc.dst, tc.x, tc.at)[tc.at])
-
-			assert.Equal(t, Insert(tc.dst, tc.x, tc.at), alternative(tc.dst, tc.x, tc.at))
+			assert.Equal(t, tc.t, Insert(tc.dst, tc.t, tc.at)[tc.at])
+			assert.Equal(t, Insert(tc.dst, tc.t, tc.at), InsertV2(tc.dst, tc.t, tc.at))
 		})
 	}
 }
 
-// BenchmarkInsert/presented,_head-4         	10000000	       124 ns/op	     240 B/op	       2 allocs/op
-// BenchmarkInsert/presented,_center-4       	10000000	       123 ns/op	     240 B/op	       2 allocs/op
-// BenchmarkInsert/presented,_tail-4         	10000000	       129 ns/op	     240 B/op	       2 allocs/op
-// BenchmarkInsert/alternative,_head-4       	10000000	       120 ns/op	     240 B/op	       2 allocs/op
-// BenchmarkInsert/alternative,_center-4     	10000000	       120 ns/op	     240 B/op	       2 allocs/op
-// BenchmarkInsert/alternative,_tail-4       	10000000	       119 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/v1,_head-4         	10000000	       143 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/v1,_center-4       	10000000	       122 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/v1,_tail-4         	10000000	       130 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/v2,_head-4         	10000000	       125 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/v2,_center-4       	10000000	       130 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/v2,_tail-4         	10000000	       138 ns/op	     240 B/op	       2 allocs/op
 func BenchmarkInsert(b *testing.B) {
 	benchmarks := []struct {
 		name      string
 		algorithm func([]T, T, int) []T
 	}{
-		{"presented", Insert},
-		{"alternative", func(dst []T, t T, at int) []T {
-			dst = append(dst, 0)
-			copy(dst[at+1:], dst[at:])
-			dst[at] = t
-			return dst
-		}},
+		{"v1", Insert},
+		{"v2", InsertV2},
 	}
 	for _, bm := range benchmarks {
 		bm := bm
@@ -407,6 +390,29 @@ func BenchmarkInsert(b *testing.B) {
 			for i := 0; i < b.N; i++ {
 				_ = bm.algorithm(make([]T, 10), 9, 10)
 			}
+		})
+	}
+}
+
+//
+// InsertVector
+//
+
+func TestInsertVector(t *testing.T) {
+	tests := []struct {
+		name string
+		dst  []T
+		v    []T
+		at   int
+	}{
+		{"head", []T{2, 3}, []T{1}, 0},
+		{"center", []T{1, 3}, []T{2}, 1},
+		{"tail", []T{1, 2}, []T{3}, 2},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Equal(t, tc.v, InsertVector(tc.dst, tc.v, tc.at)[tc.at:tc.at+len(tc.v)])
 		})
 	}
 }
