@@ -475,3 +475,26 @@ func TestFilter(t *testing.T) {
 			FilterByValue([]T{1, 2, 3, 4}, func(t T) bool { return t%2 != 0 }))
 	})
 }
+
+//
+// Reverse
+//
+
+func TestReverse(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      []T
+		expected []T
+	}{
+		{"odd", []T{1, 2, 3}, []T{3, 2, 1}},
+		{"even", []T{0, 1, 2, 3}, []T{3, 2, 1, 0}},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.NotEqual(t, tc.expected, tc.src)
+			Reverse(tc.src)
+			assert.Equal(t, tc.expected, tc.src)
+		})
+	}
+}

@@ -68,3 +68,9 @@ func FilterByKey(src []T, filter func(int) bool) []T {
 func FilterByValue(src []T, filter func(T) bool) []T {
 	return Filter(src, func(_ int, t T) bool { return filter(t) })
 }
+
+func Reverse(src []T) {
+	for left, right := 0, len(src)-1; left < right; left, right = left+1, right-1 {
+		src[left], src[right] = src[right], src[left]
+	}
+}
