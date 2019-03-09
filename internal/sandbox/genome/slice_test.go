@@ -13,10 +13,6 @@ func TestCopy(t *testing.T) {
 		src  []T
 	}{
 		{
-			"nil",
-			nil,
-		},
-		{
 			"empty",
 			[]T{},
 		},
@@ -66,22 +62,22 @@ func TestCut(t *testing.T) {
 		expected []T
 	}{
 		{
-			"left",
+			"head",
 			[]T{1, 2, 3, 4, 5},
 			0, 2,
 			[]T{3, 4, 5},
-		},
-		{
-			"right",
-			[]T{1, 2, 3, 4, 5},
-			3, 5,
-			[]T{1, 2, 3},
 		},
 		{
 			"center",
 			[]T{1, 2, 3, 4, 5},
 			1, 4,
 			[]T{1, 5},
+		},
+		{
+			"tail",
+			[]T{1, 2, 3, 4, 5},
+			3, 5,
+			[]T{1, 2, 3},
 		},
 	}
 	for _, test := range tests {
@@ -93,14 +89,14 @@ func TestCut(t *testing.T) {
 }
 
 // BenchmarkCut/presented-4         	30000000	        47.7 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkCut/gc_safe-4           	30000000	        49.8 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkCut/gc-safe-4           	30000000	        49.8 ns/op	      80 B/op	       1 allocs/op
 func BenchmarkCut(b *testing.B) {
 	benchmarks := []struct {
 		name      string
 		algorithm func([]T, int, int) []T
 	}{
 		{"presented", Cut},
-		{"gc safe", func(src []T, from, to int) []T {
+		{"gc-safe", func(src []T, from, to int) []T {
 			copy(src[from:], src[to:])
 			for k, n := len(src)-to+from, len(src); k < n; k++ {
 				src[k] = 0 // nil for pointers
@@ -128,7 +124,7 @@ func TestDelete(t *testing.T) {
 		expected []T
 	}{
 		{
-			"first",
+			"head",
 			[]T{1, 2, 3},
 			0,
 			[]T{2, 3},
@@ -140,7 +136,7 @@ func TestDelete(t *testing.T) {
 			[]T{1, 3},
 		},
 		{
-			"last",
+			"tail",
 			[]T{1, 2, 3},
 			2,
 			[]T{1, 2},
@@ -154,21 +150,21 @@ func TestDelete(t *testing.T) {
 	}
 }
 
-// BenchmarkDelete/presented,_first-4         	20000000	        61.3 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/presented,_center-4        	30000000	        47.6 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/presented,_last-4          	30000000	        48.5 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/alternative,_first-4       	20000000	        51.8 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/alternative,_center-4      	30000000	        47.6 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/alternative,_last-4        	30000000	        46.7 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/unstable,_first-4          	30000000	        43.3 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/unstable,_center-4         	30000000	        46.0 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/unstable,_last-4           	30000000	        44.9 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/gc_safe,_first-4           	20000000	        73.6 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/gc_safe,_center-4          	20000000	        65.6 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/gc_safe,_last-4            	30000000	        52.6 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/unstable_gc_safe,_first-4  	30000000	        43.8 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/unstable_gc_safe,_center-4 	30000000	        44.1 ns/op	      80 B/op	       1 allocs/op
-// BenchmarkDelete/unstable_gc_safe,_last-4   	30000000	        43.9 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_head-4         	20000000	        52.6 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_center-4       	30000000	        48.7 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/presented,_tail-4         	30000000	        48.3 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_head-4       	30000000	        52.6 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_center-4     	20000000	        50.5 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/alternative,_tail-4       	30000000	        45.6 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable,_head-4          	30000000	        43.3 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable,_center-4        	30000000	        42.8 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable,_tail-4          	30000000	        43.1 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/gc-safe,_head-4           	20000000	        52.1 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/gc-safe,_center-4         	30000000	        48.5 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/gc-safe,_tail-4           	30000000	        47.3 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable_gcs,_head-4      	30000000	        45.4 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable_gcs,_center-4    	30000000	        43.4 ns/op	      80 B/op	       1 allocs/op
+// BenchmarkDelete/unstable_gcs,_tail-4      	30000000	        45.4 ns/op	      80 B/op	       1 allocs/op
 func BenchmarkDelete(b *testing.B) {
 	benchmarks := []struct {
 		name      string
@@ -181,13 +177,13 @@ func BenchmarkDelete(b *testing.B) {
 			src[i] = src[last]
 			return src[:last]
 		}},
-		{"gc safe", func(src []T, i int) []T {
+		{"gc-safe", func(src []T, i int) []T {
 			copy(src[i:], src[i+1:])
 			last := len(src) - 1
 			src[last] = 0 // nil for pointers
 			return src[:last]
 		}},
-		{"unstable gc safe", func(src []T, i int) []T {
+		{"unstable gcs", func(src []T, i int) []T {
 			last := len(src) - 1
 			src[i] = src[last]
 			src[last] = 0 // nil for pointers
@@ -196,7 +192,7 @@ func BenchmarkDelete(b *testing.B) {
 	}
 	for _, bm := range benchmarks {
 		bm := bm
-		b.Run(bm.name+", first", func(b *testing.B) {
+		b.Run(bm.name+", head", func(b *testing.B) {
 			b.ReportAllocs()
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
@@ -210,7 +206,7 @@ func BenchmarkDelete(b *testing.B) {
 				_ = bm.algorithm(make([]T, 10), 5)
 			}
 		})
-		b.Run(bm.name+", last", func(b *testing.B) {
+		b.Run(bm.name+", tail", func(b *testing.B) {
 			b.ReportAllocs()
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
@@ -228,19 +224,19 @@ func TestExpand(t *testing.T) {
 		expected []T
 	}{
 		{
-			"at the beginning",
+			"head",
 			[]T{1, 2, 3},
 			0, 2,
 			[]T{0, 0, 1, 2, 3},
 		},
 		{
-			"at the center",
+			"center",
 			[]T{1, 2, 3},
 			2, 2,
 			[]T{1, 2, 0, 0, 3},
 		},
 		{
-			"at the end",
+			"tail",
 			[]T{1, 2, 3},
 			3, 2,
 			[]T{1, 2, 3, 0, 0},
@@ -292,6 +288,95 @@ func BenchmarkExtend(b *testing.B) {
 			b.ResetTimer()
 			for i := 0; i < b.N; i++ {
 				_ = Extend(make([]T, 1), 10)
+			}
+		})
+	}
+}
+
+func TestInsert(t *testing.T) {
+	alternative := func(dst []T, t T, at int) []T {
+		dst = append(dst, 0)
+		copy(dst[at+1:], dst[at:])
+		dst[at] = t
+		return dst
+	}
+
+	tests := []struct {
+		name string
+		dst  []T
+		x    T
+		at   int
+	}{
+		{
+			"head",
+			[]T{2, 3},
+			1,
+			0,
+		},
+		{
+			"center",
+			[]T{1, 3},
+			2,
+			1,
+		},
+		{
+			"tail",
+			[]T{1, 2},
+			3,
+			2,
+		},
+	}
+	for _, test := range tests {
+		tc := test
+		t.Run(test.name, func(t *testing.T) {
+			assert.Len(t, Insert(tc.dst, tc.x, tc.at), len(tc.dst)+1)
+			assert.Equal(t, tc.x, Insert(tc.dst, tc.x, tc.at)[tc.at])
+
+			assert.Equal(t, Insert(tc.dst, tc.x, tc.at), alternative(tc.dst, tc.x, tc.at))
+		})
+	}
+}
+
+// BenchmarkInsert/presented,_head-4         	10000000	       124 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/presented,_center-4       	10000000	       123 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/presented,_tail-4         	10000000	       129 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/alternative,_head-4       	10000000	       120 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/alternative,_center-4     	10000000	       120 ns/op	     240 B/op	       2 allocs/op
+// BenchmarkInsert/alternative,_tail-4       	10000000	       119 ns/op	     240 B/op	       2 allocs/op
+func BenchmarkInsert(b *testing.B) {
+	benchmarks := []struct {
+		name      string
+		algorithm func([]T, T, int) []T
+	}{
+		{"presented", Insert},
+		{"alternative", func(dst []T, t T, at int) []T {
+			dst = append(dst, 0)
+			copy(dst[at+1:], dst[at:])
+			dst[at] = t
+			return dst
+		}},
+	}
+	for _, bm := range benchmarks {
+		bm := bm
+		b.Run(bm.name+", head", func(b *testing.B) {
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_ = bm.algorithm(make([]T, 10), 0, 10)
+			}
+		})
+		b.Run(bm.name+", center", func(b *testing.B) {
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_ = bm.algorithm(make([]T, 10), 5, 10)
+			}
+		})
+		b.Run(bm.name+", tail", func(b *testing.B) {
+			b.ReportAllocs()
+			b.ResetTimer()
+			for i := 0; i < b.N; i++ {
+				_ = bm.algorithm(make([]T, 10), 9, 10)
 			}
 		})
 	}

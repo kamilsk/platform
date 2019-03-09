@@ -1,11 +1,6 @@
 package genome
 
-type T int64
-
 func Copy(src []T) []T {
-	if src == nil {
-		return nil
-	}
 	replica := make([]T, len(src))
 	copy(replica, src)
 	return replica
@@ -20,13 +15,13 @@ func Delete(src []T, i int) []T {
 }
 
 func Expand(src []T, at, size int) []T {
-	// optimizations:
-	// - nothing to do if size is zero
-	// - use Extend if at is the last element
-	// - allocate + copy if at is the first element
 	return append(src[:at], append(make([]T, size), src[at:]...)...)
 }
 
 func Extend(src []T, size int) []T {
 	return append(src, make([]T, size)...)
+}
+
+func Insert(dst []T, t T, at int) []T {
+	return append(dst[:at], append([]T{t}, dst[at:]...)...)
 }
