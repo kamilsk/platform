@@ -2,7 +2,6 @@ package math
 
 import (
 	"sort"
-	"sync/atomic"
 )
 
 // Sequence returns an empty slice with the specified size.
@@ -11,8 +10,8 @@ import (
 //  	// do something five times
 //  }
 //
-func Sequence(size int) []struct{} {
-	return make([]struct{}, size)
+func Sequence(size int) []int {
+	return make([]int, size)
 }
 
 // BatchSequence returns a specific slice for batch iteration on another slice.
@@ -61,33 +60,6 @@ func Reduce(sequence ...int) interface {
 	Sum() int
 } {
 	return reducer(sequence)
-}
-
-// Generator provides functionality to produce increasing sequence of numbers.
-//
-//  generator, sequence := new(Generator).At(10), make([]ID, 0, 10)
-//
-//  for range Sequence(10) {
-//  	sequence = append(sequence, ID(generator.Next()))
-//  }
-//
-type Generator uint64
-
-func (generator *Generator) At(position uint64) *Generator {
-	atomic.StoreUint64((*uint64)(generator), position)
-	return generator
-}
-
-func (generator *Generator) Current() uint64 {
-	return atomic.LoadUint64((*uint64)(generator))
-}
-
-func (generator *Generator) Jump(distance uint64) uint64 {
-	return atomic.AddUint64((*uint64)(generator), distance)
-}
-
-func (generator *Generator) Next() uint64 {
-	return atomic.AddUint64((*uint64)(generator), 1)
 }
 
 type reducer []int
