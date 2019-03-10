@@ -2,7 +2,7 @@ package safe
 
 import "github.com/pkg/errors"
 
-// Safe runs the action and captures a panic as its error.
+// Do runs the action and captures a panic as its error.
 //
 //  serve := make(chan error, 1)
 //

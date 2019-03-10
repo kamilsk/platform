@@ -2,33 +2,40 @@ package signal
 
 import (
 	"context"
+	"io"
 
+	"github.com/kamilsk/platform/pkg/safe"
 	"github.com/kamilsk/platform/pkg/sync"
 )
 
 // New returns a listener of the termination signals.
-func New() *listener {
-	return &listener{}
+func New() *Listener {
+	return &Listener{}
 }
 
-type listener struct {
-	callbacks []func()
+type Listener struct {
+	resources []resource
 }
 
-// Callback registers a callback to execution later
+// AddResource registers the resource to release it later
 // when the termination signals caught.
-func (listener *listener) Callback(callback func()) {
-	listener.callbacks = append(listener.callbacks, callback)
+func (listener *Listener) AddResource(src io.Closer, cleaners ...func(error)) {
+	listener.resources = append(listener.resources, resource{src, cleaners})
 }
 
 // Listen starts listening to termination signals.
-// It runs registered callbacks when the termination signals caught
+// It releases registered resources when the termination signals caught
 // and never returns an error.
-func (listener *listener) Listen(ctx context.Context) error {
+func (listener *Listener) Listen(ctx context.Context) error {
 	if err := sync.Termination().Wait(ctx); err == sync.ErrSignalTrapped {
-		for _, callback := range listener.callbacks {
-			callback()
+		for _, resource := range listener.resources {
+			safe.Close(resource, resource.cleaners...)
 		}
 	}
 	return nil
+}
+
+type resource struct {
+	io.Closer
+	cleaners []func(error)
 }
