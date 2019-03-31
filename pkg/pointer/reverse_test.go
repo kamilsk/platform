@@ -2,6 +2,7 @@ package pointer_test
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/kamilsk/platform/pkg/pointer"
 	"github.com/stretchr/testify/assert"
@@ -147,6 +148,21 @@ func TestValueOfString(t *testing.T) {
 	}
 	for _, test := range tests {
 		assert.Equal(t, test.v, ValueOfString(test.s))
+	}
+}
+
+func TestValueOfTime(t *testing.T) {
+	now := time.Now()
+
+	tests := []struct {
+		t *time.Time
+		v time.Time
+	}{
+		{},
+		{ToTime(now), now},
+	}
+	for _, test := range tests {
+		assert.Equal(t, test.v, ValueOfTime(test.t))
 	}
 }
 

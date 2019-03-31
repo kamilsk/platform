@@ -3,6 +3,8 @@
 // Based on https://github.com/AlekSi/pointer.
 package pointer
 
+import "time"
+
 // ToBool returns pointer to boolean primitive.
 func ToBool(b bool) *bool { return &b }
 
@@ -35,6 +37,9 @@ func ToRune(r rune) *rune { return &r }
 
 // ToString returns pointer to string primitive.
 func ToString(s string) *string { return &s }
+
+// ToTime returns pointer to time.Time.
+func ToTime(t time.Time) *time.Time { return &t }
 
 // ToUint returns pointer to uint primitive.
 func ToUint(u uint) *uint { return &u }

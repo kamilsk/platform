@@ -1,5 +1,7 @@
 package pointer
 
+import "time"
+
 // ValueOfBool returns value of pointer or its default value if pointer is nil.
 func ValueOfBool(b *bool) bool {
 	if b == nil {
@@ -86,6 +88,14 @@ func ValueOfString(s *string) string {
 		return ""
 	}
 	return *s
+}
+
+// ValueOfTime returns value of pointer or its default value if pointer is nil.
+func ValueOfTime(t *time.Time) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
+	return *t
 }
 
 // ValueOfUint returns value of pointer or its default value if pointer is nil.

@@ -2,6 +2,7 @@ package pointer_test
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/kamilsk/platform/pkg/pointer"
 )
@@ -79,6 +80,13 @@ func TestRune(t *testing.T) {
 func TestString(t *testing.T) {
 	var x string
 	if *ToString(x) != x {
+		t.Fail()
+	}
+}
+
+func TestTime(t *testing.T) {
+	var x time.Time
+	if *ToTime(x) != x {
 		t.Fail()
 	}
 }
