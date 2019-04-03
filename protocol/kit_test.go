@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/golang/mock/gomock"
+	_ "github.com/golang/mock/mockgen/model"
 	. "github.com/kamilsk/platform/protocol"
 	"github.com/stretchr/testify/assert"
 )
