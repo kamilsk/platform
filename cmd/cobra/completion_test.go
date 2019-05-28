@@ -24,11 +24,10 @@ func TestCompletionCommand(t *testing.T) {
 			buf := bytes.NewBuffer(nil)
 			cmd := &cobra.Command{Use: "test"}
 			cmd.AddCommand(NewCompletionCommand())
-			assert.Len(t, cmd.Commands(), 1)
-			cmd = cmd.Commands()[0]
+			cmd.SetArgs([]string{"completion", tc.format})
 			cmd.SetOutput(buf)
-			assert.NoError(t, cmd.Flag("format").Value.Set(tc.format))
-			assert.NoError(t, cmd.RunE(cmd, nil))
+			assert.Len(t, cmd.Commands(), 1)
+			assert.NoError(t, cmd.Execute())
 			assert.Contains(t, buf.String(), tc.expected)
 		})
 	}
