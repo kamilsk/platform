@@ -42,7 +42,7 @@ func TestTimestamp(t *testing.T) {
 		{"nil pointer", nil, func(t assert.TestingT, tp *time.Time) { assert.Nil(t, Timestamp(tp)) }},
 		{"normal use", new(time.Time), func(t assert.TestingT, tp *time.Time) { assert.NotNil(t, Timestamp(tp)) }},
 		{"invalid time", func() *time.Time {
-			tp := time.Time{}.AddDate(-math.MaxInt32, -math.MaxInt32, -math.MaxInt32)
+			tp := time.Now().AddDate(-math.MaxInt32, -math.MaxInt32, -math.MaxInt32)
 			return &tp
 		}(), func(t assert.TestingT, tp *time.Time) { assert.Panics(t, func() { Timestamp(tp) }) }},
 	}
