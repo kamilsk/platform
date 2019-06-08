@@ -6,8 +6,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/kamilsk/platform/pkg/sync"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/sync"
 )
 
 const delta = 10 * time.Millisecond

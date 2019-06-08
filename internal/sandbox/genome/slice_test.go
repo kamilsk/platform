@@ -5,9 +5,10 @@ import (
 	"testing"
 	"time"
 
+	"github.com/stretchr/testify/assert"
+
 	. "github.com/kamilsk/platform/internal/sandbox/genome"
 	"github.com/kamilsk/platform/pkg/math"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestCopy(t *testing.T) {

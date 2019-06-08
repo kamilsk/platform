@@ -4,8 +4,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/kamilsk/platform/pkg/pointer"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/pointer"
 )
 
 func TestValueOfBool(t *testing.T) {

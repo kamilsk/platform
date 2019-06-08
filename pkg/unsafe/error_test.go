@@ -8,8 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/kamilsk/platform/pkg/unsafe"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/unsafe"
 )
 
 func TestDoSilent(t *testing.T) {

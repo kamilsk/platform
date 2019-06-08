@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/kamilsk/platform/pkg/fn"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/fn"
 )
 
 func TestRepeat(t *testing.T) {

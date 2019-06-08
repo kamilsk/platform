@@ -3,8 +3,9 @@ package protocol
 import (
 	"context"
 
-	"github.com/kamilsk/platform/pkg/safe"
 	"github.com/pkg/errors"
+
+	"github.com/kamilsk/platform/pkg/safe"
 )
 
 // Callback contains a channel to return a result of shutdown operation.

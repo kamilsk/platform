@@ -4,8 +4,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/kamilsk/platform/pkg/fn"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/fn"
 )
 
 const delta = 10 * time.Millisecond

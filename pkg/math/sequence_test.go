@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/kamilsk/platform/pkg/math"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/math"
 )
 
 func TestBatchSequence(t *testing.T) {

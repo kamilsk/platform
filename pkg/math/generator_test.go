@@ -3,8 +3,9 @@ package math_test
 import (
 	"testing"
 
-	. "github.com/kamilsk/platform/pkg/math"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/math"
 )
 
 func TestGenerator(t *testing.T) {

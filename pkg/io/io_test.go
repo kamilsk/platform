@@ -8,8 +8,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/kamilsk/platform/pkg/io"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/io"
 )
 
 func TestTeeReadCloser(t *testing.T) {

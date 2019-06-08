@@ -5,8 +5,9 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/kamilsk/platform/internal/sandbox/http"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/internal/sandbox/http"
 )
 
 func TestTimeout(t *testing.T) {

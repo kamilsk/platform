@@ -8,8 +8,9 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	. "github.com/kamilsk/platform/pkg/strings"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/strings"
 )
 
 func TestConcat(t *testing.T) {

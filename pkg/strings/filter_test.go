@@ -3,8 +3,9 @@ package strings_test
 import (
 	"testing"
 
-	. "github.com/kamilsk/platform/pkg/strings"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/strings"
 )
 
 func TestFirstValid(t *testing.T) {

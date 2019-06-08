@@ -4,8 +4,9 @@ import (
 	"errors"
 	"testing"
 
-	. "github.com/kamilsk/platform/pkg/safe"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/safe"
 )
 
 func TestClose(t *testing.T) {

@@ -3,9 +3,10 @@ package context
 import (
 	"context"
 
+	"github.com/pkg/errors"
+
 	"github.com/kamilsk/platform/pkg/safe"
 	"github.com/kamilsk/platform/protocol"
-	"github.com/pkg/errors"
 )
 
 func Run(ctx context.Context, server protocol.Server) error {

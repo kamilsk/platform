@@ -4,8 +4,9 @@ import (
 	"context"
 	"testing"
 
-	. "github.com/kamilsk/platform/internal/sandbox/context"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/internal/sandbox/context"
 )
 
 func TestChain(t *testing.T) {

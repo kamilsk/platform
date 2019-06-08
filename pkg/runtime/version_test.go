@@ -4,8 +4,9 @@ import (
 	"strings"
 	"testing"
 
-	. "github.com/kamilsk/platform/pkg/runtime"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/pkg/runtime"
 )
 
 func TestVersion_Compare(t *testing.T) {

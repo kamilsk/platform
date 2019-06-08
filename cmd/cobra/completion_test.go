@@ -4,9 +4,10 @@ import (
 	"bytes"
 	"testing"
 
-	. "github.com/kamilsk/platform/cmd/cobra"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/cmd/cobra"
 )
 
 func TestCompletionCommand(t *testing.T) {

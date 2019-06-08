@@ -5,9 +5,10 @@ import (
 	"testing"
 	"time"
 
-	. "github.com/kamilsk/platform/internal/sandbox/context"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+
+	. "github.com/kamilsk/platform/internal/sandbox/context"
 )
 
 const delta = 10 * time.Millisecond

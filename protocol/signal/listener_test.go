@@ -7,9 +7,10 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/kamilsk/platform/pkg/safe"
 	. "github.com/kamilsk/platform/protocol/signal"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestListener_Listen(t *testing.T) {
