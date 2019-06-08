@@ -5,7 +5,6 @@
 [![Build][icon_build]][page_build]
 [![Quality][icon_quality]][page_quality]
 [![Coverage][icon_coverage]][page_coverage]
-[![GoDoc][icon_docs]][page_docs]
 
 ## Used by
 
