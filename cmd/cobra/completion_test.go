@@ -17,7 +17,7 @@ func TestCompletionCommand(t *testing.T) {
 		expected string
 	}{
 		{"Bash", "bash", "# bash completion for test"},
-		{"Zsh", "zsh", "#compdef test"},
+		{"Zsh", "zsh", "#compdef _test test"},
 	}
 	for _, test := range tests {
 		tc := test
