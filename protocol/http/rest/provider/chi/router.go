@@ -16,9 +16,9 @@ func PackHandler(method string, handler rest.Handler, placeholders ...string) re
 	return func() (string, string, http.Handler) {
 		path, h := handler()
 		return method, path, http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
-			if len(placeholders) > 0 {
+			if steps := len(placeholders); steps > 0 {
 				q := req.URL.Query()
-				for i, steps := 0, len(placeholders)/2; i < steps; i += 2 {
+				for i := 0; i < steps; i += 2 {
 					from, to := placeholders[i], placeholders[i+1]
 					q.Set(to, chi.URLParam(req, from))
 				}
@@ -37,9 +37,9 @@ func PackHandlerFunc(method string, handler rest.HandlerFunc, placeholders ...st
 	return func() (string, string, http.HandlerFunc) {
 		path, h := handler()
 		return method, path, func(rw http.ResponseWriter, req *http.Request) {
-			if len(placeholders) > 0 {
+			if steps := len(placeholders); steps > 0 {
 				q := req.URL.Query()
-				for i, steps := 0, len(placeholders)/2; i < steps; i += 2 {
+				for i := 0; i < steps; i += 2 {
 					from, to := placeholders[i], placeholders[i+1]
 					q.Set(to, chi.URLParam(req, from))
 				}

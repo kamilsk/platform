@@ -1,6 +1,7 @@
 package chi_test
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -9,7 +10,11 @@ import (
 	. "github.com/kamilsk/platform/protocol/http/rest"
 )
 
-const key = "key"
+const (
+	key     = "key"
+	name    = "name"
+	welcome = "welcome"
+)
 
 func v1(prefix string, handlers ...PackedHandler) Handler {
 	return func() (string, http.Handler) {
@@ -50,6 +55,24 @@ func pingHandlerFunc(path string, encoder func(interface{}) ([]byte, error), t a
 			n, err := rw.Write(data)
 			assert.NoError(t, err)
 			assert.Len(t, data, n)
+		}
+	}
+}
+
+func welcomeHandler(path string, t assert.TestingT) Handler {
+	return func() (string, http.Handler) {
+		return welcomeHandlerFunc(path, t)()
+	}
+}
+
+func welcomeHandlerFunc(path string, t assert.TestingT) HandlerFunc {
+	return func() (string, http.HandlerFunc) {
+		return path, func(rw http.ResponseWriter, req *http.Request) {
+			q := req.URL.Query()
+
+			n, err := fmt.Fprintf(rw, "%s, %s!", q.Get(welcome), q.Get(name))
+			assert.NoError(t, err)
+			assert.True(t, n > 5)
 		}
 	}
 }
