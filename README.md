@@ -2,50 +2,36 @@
 >
 > Toolkit for all my micro service family.
 
-[![Patreon][icon_patreon]][support]
-[![Build][icon_build]][build]
-[![Quality][icon_quality]][quality]
-[![Coverage][icon_coverage]][quality]
-[![GoDoc][icon_docs]][docs]
-[![License][icon_license]][license]
+[![Build][icon_build]][page_build]
+[![Quality][icon_quality]][page_quality]
+[![Coverage][icon_coverage]][page_coverage]
+[![GoDoc][icon_docs]][page_docs]
 
 ## Used by
 
-- [Click!][click]
-- [Forma][forma]
-- [Guard][guard]
-- [Passport][passport]
+- [Avito][page_avito]
+- [Click!][page_click]
+- [Forma][page_forma]
+- [Guard][page_guard]
+- [Passport][page_passport]
 
 ---
 
-[![@kamilsk][icon_tw_author]][author]
-[![@octolab][icon_tw_sponsor]][sponsor]
+made with ❤️ for everyone
 
-made with ❤️ by [OctoLab][octolab]
-
-[build]:           https://travis-ci.org/kamilsk/platform
-[docs]:            https://godoc.org/github.com/kamilsk/platform
-[license]:         LICENSE
-[promo]:           https://github.com/kamilsk/platform
-[quality]:         https://scrutinizer-ci.com/g/kamilsk/platform/?branch=master
-
-[click]:           https://github.com/kamilsk/click
-[forma]:           https://github.com/kamilsk/form-api
-[guard]:           https://github.com/kamilsk/guard
-[passport]:        https://github.com/kamilsk/passport
-
-[author]:          https://twitter.com/ikamilsk
-[octolab]:         https://www.octolab.org/
-[sponsor]:         https://twitter.com/octolab_inc
-[support]:         https://www.patreon.com/octolab
-
-[icon_awesome]:    https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg
 [icon_build]:      https://travis-ci.org/kamilsk/platform.svg?branch=master
-[icon_coverage]:   https://scrutinizer-ci.com/g/kamilsk/platform/badges/coverage.png?b=master
+[icon_coverage]:   https://api.codeclimate.com/v1/badges/092e6f2f5ad3c447314a/test_coverage
 [icon_docs]:       https://godoc.org/github.com/kamilsk/platform?status.svg
-[icon_license]:    https://img.shields.io/badge/license-MIT-blue.svg
-[icon_patreon]:    https://img.shields.io/badge/patreon-donate-orange.svg
 [icon_quality]:    https://scrutinizer-ci.com/g/kamilsk/platform/badges/quality-score.png?b=master
-[icon_tw_author]:  https://img.shields.io/badge/author-%40kamilsk-blue.svg
-[icon_tw_sponsor]: https://img.shields.io/badge/sponsor-%40octolab-blue.svg
-[icon_twitter]:    https://img.shields.io/twitter/url/http/shields.io.svg?style=social
+
+[page_build]:      https://travis-ci.org/kamilsk/platform
+[page_coverage]:   https://codeclimate.com/github/kamilsk/platform
+[page_docs]:       https://godoc.org/github.com/kamilsk/platform
+[page_quality]:    https://scrutinizer-ci.com/g/kamilsk/platform/?branch=master
+
+[page_avito]:      https://github.com/avito-tech
+[page_click]:      https://github.com/kamilsk/click
+[page_forma]:      https://github.com/kamilsk/form-api
+[page_guard]:      https://github.com/kamilsk/guard
+[page_passport]:   https://github.com/kamilsk/passport
+[page_promo]:      https://github.com/kamilsk/platform
