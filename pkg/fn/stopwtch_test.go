@@ -9,14 +9,12 @@ import (
 	. "github.com/kamilsk/platform/pkg/fn"
 )
 
-const delta = 10 * time.Millisecond
-
 func TestStopwatch(t *testing.T) {
 	var compare time.Duration
 
 	duration := Stopwatch(func() {
 		start := time.Now()
-		time.Sleep(delta)
+		time.Sleep(time.Millisecond)
 		compare = time.Since(start)
 	})
 
