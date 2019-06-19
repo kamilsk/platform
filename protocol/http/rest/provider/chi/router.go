@@ -9,6 +9,16 @@ import (
 )
 
 // PackHandler packs rest.Handler into rest.PackedHandler using chi router.
+//
+//  mux := http.NewServeMux()
+//  mux.Handle(
+//  	rest.V1("/v1/",
+//  		chi.PackHandler(gohttp.MethodGet, v1.HandlerX),
+//  		chi.PackHandler(gohttp.MethodGet, v1.HandlerY),
+//  		chi.PackHandler(gohttp.MethodGet, v1.HandlerZ),
+//  	),
+//  )
+//
 func PackHandler(method string, handler rest.Handler, placeholders ...string) rest.PackedHandler {
 	if len(placeholders)%2 != 0 {
 		panic("count of passed placeholders must be even")
@@ -30,6 +40,16 @@ func PackHandler(method string, handler rest.Handler, placeholders ...string) re
 }
 
 // PackHandlerFunc packs rest.HandlerFunc into rest.PackedHandlerFunc using chi router.
+//
+//  mux := http.NewServeMux()
+//  mux.HandleFunc(
+//  	rest.V2("/v2/",
+//  		chi.PackHandlerFunc(gohttp.MethodGet, v1.HandlerFuncX),
+//  		chi.PackHandlerFunc(gohttp.MethodGet, v1.HandlerFuncY),
+//  		chi.PackHandlerFunc(gohttp.MethodGet, v1.HandlerFuncZ),
+//  	),
+//  )
+//
 func PackHandlerFunc(method string, handler rest.HandlerFunc, placeholders ...string) rest.PackedHandlerFunc {
 	if len(placeholders)%2 != 0 {
 		panic("count of passed placeholders must be even")

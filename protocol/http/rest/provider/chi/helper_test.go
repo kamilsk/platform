@@ -16,28 +16,24 @@ const (
 	welcome = "welcome"
 )
 
-func v1(prefix string, handlers ...PackedHandler) Handler {
-	return func() (string, http.Handler) {
-		r := chi.NewRouter()
-		r.Route(prefix, func(r chi.Router) {
-			for _, handler := range handlers {
-				r.Method(handler())
-			}
-		})
-		return prefix, r
-	}
+func v1(prefix string, handlers ...PackedHandler) (string, http.Handler) {
+	r := chi.NewRouter()
+	r.Route(prefix, func(r chi.Router) {
+		for _, handler := range handlers {
+			r.Method(handler())
+		}
+	})
+	return prefix, r
 }
 
-func v2(prefix string, handlers ...PackedHandlerFunc) HandlerFunc {
-	return func() (string, http.HandlerFunc) {
-		r := chi.NewRouter()
-		r.Route(prefix, func(r chi.Router) {
-			for _, handler := range handlers {
-				r.Method(handler())
-			}
-		})
-		return prefix, r.ServeHTTP
-	}
+func v2(prefix string, handlers ...PackedHandlerFunc) (string, http.HandlerFunc) {
+	r := chi.NewRouter()
+	r.Route(prefix, func(r chi.Router) {
+		for _, handler := range handlers {
+			r.Method(handler())
+		}
+	})
+	return prefix, r.ServeHTTP
 }
 
 func pingHandler(path string, encoder func(interface{}) ([]byte, error), t assert.TestingT) Handler {
