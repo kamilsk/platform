@@ -9,6 +9,11 @@ import (
 	"github.com/kamilsk/platform/protocol/http/rest"
 )
 
+// Handler returns handler based on github.com/go-chi/chi.
+func Handler(prefix string, options ...rest.Option) http.Handler {
+	return func() (string, gohttp.Handler) { return Routing(prefix, options...) }
+}
+
 // PackHandler packs rest.Handler into rest.Handler using chi router.
 //
 //  mux := http.NewServeMux()
@@ -73,7 +78,7 @@ func PackHandlerFunc(method string, handler http.HandlerFunc, placeholders ...st
 	}
 }
 
-// Routing is a glue for a http listener and the router.
+// Routing is a glue for a http listener and the github.com/go-chi/chi router.
 //
 //  mux := http.NewServeMux()
 //  mux.Handle(chi.Routing("/api/", rest.WithMiddlewares(...), rest.WithHandlers(...)))
