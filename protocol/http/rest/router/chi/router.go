@@ -74,7 +74,7 @@ func PackHandlerFunc(method string, handler rest.HandlerFunc, placeholders ...st
 //
 //  func V1(prefix string, options ...Option) Handler {
 //  	return func() (string, http.Handler) {
-//  		cnf := &Configuration{}
+//  		cnf := &RouterConfiguration{}
 //  		for _, configure := range options {
 //  			configure(cnf)
 //  		}

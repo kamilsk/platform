@@ -11,7 +11,7 @@ import (
 
 func TestRouterConfiguration(t *testing.T) {
 	t.Run("with middlewares", func(t *testing.T) {
-		cnf := &Configuration{}
+		cnf := &RouterConfiguration{}
 		configure := WithMiddlewares(func(handler http.Handler) http.Handler { return handler })
 		configure(cnf)
 
@@ -20,7 +20,7 @@ func TestRouterConfiguration(t *testing.T) {
 		assert.Empty(t, cnf.PackedHandlers)
 	})
 	t.Run("with handlers", func(t *testing.T) {
-		cnf := &Configuration{}
+		cnf := &RouterConfiguration{}
 		configure := WithHandlers(func() (string, http.Handler) { return "/", http.DefaultServeMux })
 		configure(cnf)
 
@@ -29,7 +29,7 @@ func TestRouterConfiguration(t *testing.T) {
 		assert.Empty(t, cnf.PackedHandlers)
 	})
 	t.Run("with packed handlers", func(t *testing.T) {
-		cnf := &Configuration{}
+		cnf := &RouterConfiguration{}
 		configure := WithPackedHandlers(func() (string, string, http.Handler) {
 			return http.MethodGet, "/", http.DefaultServeMux
 		})
