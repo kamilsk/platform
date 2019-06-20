@@ -17,29 +17,27 @@ const (
 )
 
 func v1(prefix string, handlers ...PackedHandler) (string, http.Handler) {
-	r := chi.NewRouter()
-	r.Route(prefix, func(r chi.Router) {
+	router := chi.NewRouter()
+	router.Route(prefix, func(router chi.Router) {
 		for _, handler := range handlers {
-			r.Method(handler())
+			router.Method(handler())
 		}
 	})
-	return prefix, r
+	return prefix, router
 }
 
 func v2(prefix string, handlers ...PackedHandlerFunc) (string, http.HandlerFunc) {
-	r := chi.NewRouter()
-	r.Route(prefix, func(r chi.Router) {
+	router := chi.NewRouter()
+	router.Route(prefix, func(r chi.Router) {
 		for _, handler := range handlers {
 			r.Method(handler())
 		}
 	})
-	return prefix, r.ServeHTTP
+	return prefix, router.ServeHTTP
 }
 
 func pingHandler(path string, encoder func(interface{}) ([]byte, error), t assert.TestingT) Handler {
-	return func() (string, http.Handler) {
-		return pingHandlerFunc(path, encoder, t)()
-	}
+	return func() (string, http.Handler) { return pingHandlerFunc(path, encoder, t)() }
 }
 
 func pingHandlerFunc(path string, encoder func(interface{}) ([]byte, error), t assert.TestingT) HandlerFunc {
@@ -56,9 +54,7 @@ func pingHandlerFunc(path string, encoder func(interface{}) ([]byte, error), t a
 }
 
 func welcomeHandler(path string, t assert.TestingT) Handler {
-	return func() (string, http.Handler) {
-		return welcomeHandlerFunc(path, t)()
-	}
+	return func() (string, http.Handler) { return welcomeHandlerFunc(path, t)() }
 }
 
 func welcomeHandlerFunc(path string, t assert.TestingT) HandlerFunc {

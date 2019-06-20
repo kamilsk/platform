@@ -13,9 +13,9 @@ import (
 //  mux := http.NewServeMux()
 //  mux.Handle(
 //  	rest.V1("/v1/",
-//  		chi.PackHandler(gohttp.MethodGet, v1.HandlerX),
-//  		chi.PackHandler(gohttp.MethodGet, v1.HandlerY),
-//  		chi.PackHandler(gohttp.MethodGet, v1.HandlerZ),
+//  		chi.PackHandler(gohttp.MethodGet, api.HandlerX),
+//  		chi.PackHandler(gohttp.MethodGet, api.HandlerY),
+//  		chi.PackHandler(gohttp.MethodGet, api.HandlerZ),
 //  	),
 //  )
 //
@@ -44,9 +44,9 @@ func PackHandler(method string, handler rest.Handler, placeholders ...string) re
 //  mux := http.NewServeMux()
 //  mux.HandleFunc(
 //  	rest.V2("/v2/",
-//  		chi.PackHandlerFunc(gohttp.MethodGet, v1.HandlerFuncX),
-//  		chi.PackHandlerFunc(gohttp.MethodGet, v1.HandlerFuncY),
-//  		chi.PackHandlerFunc(gohttp.MethodGet, v1.HandlerFuncZ),
+//  		chi.PackHandlerFunc(gohttp.MethodGet, api.HandlerFuncX),
+//  		chi.PackHandlerFunc(gohttp.MethodGet, api.HandlerFuncY),
+//  		chi.PackHandlerFunc(gohttp.MethodGet, api.HandlerFuncZ),
 //  	),
 //  )
 //

@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	. "github.com/kamilsk/platform/protocol/http/rest/provider/chi"
+	. "github.com/kamilsk/platform/protocol/http/rest/router/chi"
 )
 
 func TestPackHandler(t *testing.T) {
