@@ -16,46 +16,67 @@ func TestPaginate(t *testing.T) {
 	tests := []struct {
 		name     string
 		url      *url.URL
-		cnf      PaginationConfig
+		cnf      PaginationConfiguration
 		total    int
 		expected Pagination
 	}{
 		{
 			"first page",
 			&url.URL{Path: "/test"},
-			PaginationConfig{"page", "per_page", 10, 3}, 7,
+			PaginationConfiguration{PageKey: "page", PerPageKey: "per_page", PerPage: 3, PerPageMax: 10}, 7,
 			Pagination{Next: "/test?page=2", Last: "/test?page=3"},
 		},
 		{
 			"middle page",
 			&url.URL{Path: "/test", RawQuery: "page=2"},
-			PaginationConfig{"page", "per_page", 10, 3}, 7,
+			PaginationConfiguration{PageKey: "page", PerPageKey: "per_page", PerPage: 3, PerPageMax: 10}, 7,
 			Pagination{First: "/test?page=1", Prev: "/test?page=1", Next: "/test?page=3", Last: "/test?page=3"},
 		},
 		{
 			"last page",
 			&url.URL{Path: "/test", RawQuery: "page=3"},
-			PaginationConfig{"page", "per_page", 10, 3}, 7,
+			PaginationConfiguration{PageKey: "page", PerPageKey: "per_page", PerPage: 3, PerPageMax: 10}, 7,
 			Pagination{First: "/test?page=1", Prev: "/test?page=2"},
 		},
 		{
-			"overflow",
+			"limit overflow",
 			&url.URL{Path: "/test", RawQuery: "per_page=30"},
-			PaginationConfig{"page", "per_page", 10, 3}, 7,
-			Pagination{},
+			PaginationConfiguration{PageKey: "page", PerPageKey: "per_page", PerPage: 3, PerPageMax: 10}, 17,
+			Pagination{Next: "/test?page=2&per_page=10", Last: "/test?page=2&per_page=10"},
+		},
+		{
+			"multiples of limit",
+			&url.URL{Path: "/test", RawQuery: "page=2&per_page=10"},
+			PaginationConfiguration{PageKey: "page", PerPageKey: "per_page", PerPage: 3, PerPageMax: 10}, 20,
+			Pagination{First: "/test?page=1&per_page=10", Prev: "/test?page=1&per_page=10"},
 		},
 	}
 	for _, test := range tests {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
-			pagination, err := Paginate(tc.cnf, tc.total, tc.url)
+			pagination, err := Paginate(tc.cnf, tc.url, tc.total)
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expected, pagination)
 		})
 	}
+	t.Run("invalid query params", func(t *testing.T) {
+		cnf := PaginationConfiguration{PageKey: "page", PerPageKey: "per_page", PerPage: 3, PerPageMax: 10}
+		var (
+			pagination Pagination
+			err        error
+		)
+
+		pagination, err = Paginate(cnf, &url.URL{Path: "/test", RawQuery: "page=a"}, 10)
+		assert.Empty(t, pagination)
+		assert.Error(t, err)
+
+		pagination, err = Paginate(cnf, &url.URL{Path: "/test", RawQuery: "per_page=a"}, 10)
+		assert.Empty(t, pagination)
+		assert.Error(t, err)
+	})
 }
 
-func TestPaginationLink(t *testing.T) {
+func TestAddPaginationLink(t *testing.T) {
 	tests := []struct {
 		name       string
 		pagination Pagination
@@ -77,7 +98,7 @@ func TestPaginationLink(t *testing.T) {
 			`Link: <page=1>; rel="first", <page=2>; rel="prev", <page=4>; rel="next", <page=5>; rel="last"`,
 		},
 		{
-			"overflow",
+			"empty pagination",
 			Pagination{},
 			"",
 		},
@@ -86,9 +107,9 @@ func TestPaginationLink(t *testing.T) {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
 			buf, header := bytes.NewBuffer(nil), http.Header{}
-			PaginationLink(header, tc.pagination)
+			AddPaginationLink(header, tc.pagination)
 			assert.NoError(t, header.Write(buf))
-			assert.Equal(t, tc.expected, strings.TrimRight(buf.String(), "\r\n"))
+			assert.Equal(t, tc.expected, strings.TrimSpace(buf.String()))
 		})
 	}
 }

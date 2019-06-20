@@ -8,17 +8,19 @@ import (
 	"strings"
 )
 
+// Pagination holds information about page navigation.
 type Pagination struct {
 	First, Prev, Next, Last string
 }
 
-type PaginationConfig struct {
-	PageKey      string
-	PerPageKey   string
-	Max, PerPage int
+// PaginationConfiguration holds a pagination configuration.
+type PaginationConfiguration struct {
+	PageKey, PerPageKey string
+	PerPage, PerPageMax int
 }
 
-func Paginate(cnf PaginationConfig, total int, url *url.URL) (Pagination, error) {
+// Paginate tries to build a pagination based on the configuration, total available items and current url.
+func Paginate(cnf PaginationConfiguration, url *url.URL, total int) (Pagination, error) {
 	var pagination Pagination
 
 	q := url.Query()
@@ -42,8 +44,8 @@ func Paginate(cnf PaginationConfig, total int, url *url.URL) (Pagination, error)
 			return pagination, err
 		}
 	}
-	if limit > cnf.Max {
-		limit = cnf.Max
+	if cnf.PerPageMax > 0 && limit > cnf.PerPageMax {
+		limit = cnf.PerPageMax
 		q.Set(cnf.PerPageKey, strconv.Itoa(limit))
 	}
 
@@ -71,8 +73,9 @@ func Paginate(cnf PaginationConfig, total int, url *url.URL) (Pagination, error)
 	return pagination, nil
 }
 
-func PaginationLink(header http.Header, pagination Pagination) {
-	order := []string{"first", "prev", "next", "last"}
+// AddPaginationLink tries to add pagination links into the header.
+func AddPaginationLink(header http.Header, pagination Pagination) {
+	order := [...]string{"first", "prev", "next", "last"}
 	rel := map[string]*string{
 		order[0]: &pagination.First,
 		order[1]: &pagination.Prev,
@@ -83,7 +86,7 @@ func PaginationLink(header http.Header, pagination Pagination) {
 	for _, k := range order {
 		v := *rel[k]
 		if v != "" {
-			hateoas = append(hateoas, fmt.Sprintf(`<%s>; rel="%s"`, v, k))
+			hateoas = append(hateoas, fmt.Sprintf("<%s>; rel=%q", v, k))
 		}
 	}
 	if len(hateoas) > 0 {

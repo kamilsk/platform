@@ -9,6 +9,18 @@ import (
 )
 
 // PackHandler packs rest.Handler into rest.PackedHandler using chi router.
+//
+//  mux := http.NewServeMux()
+//  mux.Handle(
+//  	chi.Routing("/v1/",
+//  		rest.WithPackedHandlers(
+//  			chi.PackHandler(gohttp.MethodGet, api.HandlerX),
+//  			chi.PackHandler(gohttp.MethodGet, api.HandlerY),
+//  			chi.PackHandler(gohttp.MethodGet, api.HandlerZ),
+//  		),
+//  	),
+//  )
+//
 func PackHandler(method string, handler rest.Handler, placeholders ...string) rest.PackedHandler {
 	if len(placeholders)%2 != 0 {
 		panic("count of passed placeholders must be even")
@@ -30,6 +42,16 @@ func PackHandler(method string, handler rest.Handler, placeholders ...string) re
 }
 
 // PackHandlerFunc packs rest.HandlerFunc into rest.PackedHandlerFunc using chi router.
+//
+//  mux := http.NewServeMux()
+//  mux.HandleFunc(
+//  	api.V2("/v2/",
+//  		chi.PackHandlerFunc(gohttp.MethodGet, api.HandlerFuncX),
+//  		chi.PackHandlerFunc(gohttp.MethodGet, api.HandlerFuncY),
+//  		chi.PackHandlerFunc(gohttp.MethodGet, api.HandlerFuncZ),
+//  	),
+//  )
+//
 func PackHandlerFunc(method string, handler rest.HandlerFunc, placeholders ...string) rest.PackedHandlerFunc {
 	if len(placeholders)%2 != 0 {
 		panic("count of passed placeholders must be even")
@@ -48,4 +70,33 @@ func PackHandlerFunc(method string, handler rest.HandlerFunc, placeholders ...st
 			h.ServeHTTP(rw, req)
 		}
 	}
+}
+
+// Routing is a glue for a http listener and the router.
+//
+//  mux := http.NewServeMux()
+//  mux.Handle(Routing("/api/", rest.WithMiddlewares(...), rest.WithHandlers(...)))
+//  http.ListenAndServe("localhost:8080", mux)
+//
+func Routing(prefix string, options ...rest.Option) (string, http.Handler) {
+	cnf := &rest.RouterConfiguration{}
+	for _, configure := range options {
+		configure(cnf)
+	}
+
+	r := chi.NewRouter()
+	for _, middleware := range cnf.Middlewares {
+		r.Use(middleware)
+	}
+
+	r.Route(prefix, func(r chi.Router) {
+		for _, handler := range cnf.Handlers {
+			r.Handle(handler())
+		}
+		for _, handler := range cnf.PackedHandlers {
+			r.Method(handler())
+		}
+	})
+
+	return prefix, r
 }

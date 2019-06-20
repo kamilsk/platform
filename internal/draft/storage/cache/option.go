@@ -8,8 +8,8 @@ const (
 	Week            = 7 * Day
 
 	Any       State = 0
-	Exists          = 1
-	NotExists       = 2
+	Exists    State = 1
+	NotExists State = 2
 )
 
 type Duration int

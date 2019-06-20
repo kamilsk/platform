@@ -6,7 +6,7 @@ import "time"
 //
 //  var result interface{}
 //
-//  duration := Stopwatch(func() { result = do.Some("heavy") })
+//  duration := Stopwatch(func() { result = do.some("heavy") })
 //
 func Stopwatch(fn func()) time.Duration {
 	start := time.Now()
