@@ -4,9 +4,8 @@ import "net/http"
 
 // RouterConfiguration holds a router configuration.
 type RouterConfiguration struct {
-	Middlewares    []Middleware
-	Handlers       []Handler
-	PackedHandlers []PackedHandler
+	Middlewares []Middleware
+	Handlers    []Handler
 }
 
 // Middleware provides functionality to compose http handlers.
@@ -23,9 +22,4 @@ func WithMiddlewares(middlewares ...Middleware) Option {
 // WithHandlers adds http handlers with specified paths to a router configuration.
 func WithHandlers(handlers ...Handler) Option {
 	return func(cnf *RouterConfiguration) { cnf.Handlers = append(cnf.Handlers, handlers...) }
-}
-
-// WithPackedHandlers adds http handlers with specified http methods and paths to a router configuration.
-func WithPackedHandlers(handlers ...PackedHandler) Option {
-	return func(cnf *RouterConfiguration) { cnf.PackedHandlers = append(cnf.PackedHandlers, handlers...) }
 }

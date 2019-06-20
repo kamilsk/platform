@@ -30,7 +30,7 @@
 //
 //  -- routing/v1.go --
 //
-//  func V1(prefix string, handlers ...rest.PackedHandler) (string, http.Handler) {
+//  func V1(prefix string, handlers ...rest.Handler) (string, http.Handler) {
 //  	router := chi.NewRouter()
 //  	router.Route(prefix, func(router chi.Router) {
 //  		for _, handler := range handlers {
@@ -49,17 +49,3 @@
 //  }
 //
 package rest
-
-import "net/http"
-
-// Handler is a http handler with a specified path.
-type Handler func() (path string, handler http.Handler)
-
-// HandlerFunc is a http handler with a specified path.
-type HandlerFunc func() (path string, handler http.HandlerFunc)
-
-// PackedHandler is a http handler with a specified http method and path.
-type PackedHandler func() (method, path string, handler http.Handler)
-
-// PackedHandlerFunc is a http handler with a specified http method and path.
-type PackedHandlerFunc func() (method, path string, handler http.HandlerFunc)

@@ -25,9 +25,6 @@ func TestPackHandler(t *testing.T) {
 				)...,
 			),
 			rest.WithHandlers(
-				func() (string, http.Handler) { return "/", http.DefaultServeMux },
-			),
-			rest.WithPackedHandlers(
 				PackHandler(http.MethodGet, pingHandler("/{id}", json.Marshal, t), "id", key),
 				PackHandler(http.MethodGet, welcomeHandler("/{greeting}/{person}", t), "greeting", welcome, "person", name),
 			),

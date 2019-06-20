@@ -1,14 +1,15 @@
 package chi
 
 import (
-	"net/http"
+	gohttp "net/http"
 
 	"github.com/go-chi/chi"
 
+	"github.com/kamilsk/platform/protocol/http"
 	"github.com/kamilsk/platform/protocol/http/rest"
 )
 
-// PackHandler packs rest.Handler into rest.PackedHandler using chi router.
+// PackHandler packs rest.Handler into rest.Handler using chi router.
 //
 //  mux := http.NewServeMux()
 //  mux.Handle(
@@ -21,13 +22,13 @@ import (
 //  	),
 //  )
 //
-func PackHandler(method string, handler rest.Handler, placeholders ...string) rest.PackedHandler {
+func PackHandler(method string, handler http.Handler, placeholders ...string) rest.Handler {
 	if len(placeholders)%2 != 0 {
 		panic("count of passed placeholders must be even")
 	}
-	return func() (string, string, http.Handler) {
+	return func() (string, string, gohttp.Handler) {
 		path, h := handler()
-		return method, path, http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+		return method, path, gohttp.HandlerFunc(func(rw gohttp.ResponseWriter, req *gohttp.Request) {
 			if steps := len(placeholders); steps > 0 {
 				q := req.URL.Query()
 				for i := 0; i < steps; i += 2 {
@@ -41,7 +42,7 @@ func PackHandler(method string, handler rest.Handler, placeholders ...string) re
 	}
 }
 
-// PackHandlerFunc packs rest.HandlerFunc into rest.PackedHandlerFunc using chi router.
+// PackHandlerFunc packs rest.HandlerFunc into rest.HandlerFunc using chi router.
 //
 //  mux := http.NewServeMux()
 //  mux.HandleFunc(
@@ -52,13 +53,13 @@ func PackHandler(method string, handler rest.Handler, placeholders ...string) re
 //  	),
 //  )
 //
-func PackHandlerFunc(method string, handler rest.HandlerFunc, placeholders ...string) rest.PackedHandlerFunc {
+func PackHandlerFunc(method string, handler http.HandlerFunc, placeholders ...string) rest.HandlerFunc {
 	if len(placeholders)%2 != 0 {
 		panic("count of passed placeholders must be even")
 	}
-	return func() (string, string, http.HandlerFunc) {
+	return func() (string, string, gohttp.HandlerFunc) {
 		path, h := handler()
-		return method, path, func(rw http.ResponseWriter, req *http.Request) {
+		return method, path, func(rw gohttp.ResponseWriter, req *gohttp.Request) {
 			if steps := len(placeholders); steps > 0 {
 				q := req.URL.Query()
 				for i := 0; i < steps; i += 2 {
@@ -75,10 +76,10 @@ func PackHandlerFunc(method string, handler rest.HandlerFunc, placeholders ...st
 // Routing is a glue for a http listener and the router.
 //
 //  mux := http.NewServeMux()
-//  mux.Handle(Routing("/api/", rest.WithMiddlewares(...), rest.WithHandlers(...)))
+//  mux.Handle(chi.Routing("/api/", rest.WithMiddlewares(...), rest.WithHandlers(...)))
 //  http.ListenAndServe("localhost:8080", mux)
 //
-func Routing(prefix string, options ...rest.Option) (string, http.Handler) {
+func Routing(prefix string, options ...rest.Option) (string, gohttp.Handler) {
 	cnf := &rest.RouterConfiguration{}
 	for _, configure := range options {
 		configure(cnf)
@@ -91,9 +92,6 @@ func Routing(prefix string, options ...rest.Option) (string, http.Handler) {
 
 	r.Route(prefix, func(r chi.Router) {
 		for _, handler := range cnf.Handlers {
-			r.Handle(handler())
-		}
-		for _, handler := range cnf.PackedHandlers {
 			r.Method(handler())
 		}
 	})
