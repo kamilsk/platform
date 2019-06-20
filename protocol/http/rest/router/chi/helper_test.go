@@ -16,16 +16,6 @@ const (
 	welcome = "welcome"
 )
 
-func v1(prefix string, handlers ...PackedHandler) (string, http.Handler) {
-	router := chi.NewRouter()
-	router.Route(prefix, func(router chi.Router) {
-		for _, handler := range handlers {
-			router.Method(handler())
-		}
-	})
-	return prefix, router
-}
-
 func v2(prefix string, handlers ...PackedHandlerFunc) (string, http.HandlerFunc) {
 	router := chi.NewRouter()
 	router.Route(prefix, func(r chi.Router) {

@@ -4,7 +4,7 @@
 //  for _, handler := range routing.Handlers() {
 //  	mux.Handle(handler())
 //  }
-//  http.ListenAndServe("/", mux)
+//  http.ListenAndServe("localhost:8080", mux)
 //
 //  -- routing/routes.go --
 //
@@ -26,7 +26,7 @@
 //  		chi.PackHandler(http.MethodGet, v1.Pong("/ping")),
 //  	),
 //  )
-//  http.ListenAndServe("/", mux)
+//  http.ListenAndServe("localhost:8080", mux)
 //
 //  -- routing/v1.go --
 //

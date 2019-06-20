@@ -12,10 +12,12 @@ import (
 //
 //  mux := http.NewServeMux()
 //  mux.Handle(
-//  	rest.V1("/v1/",
-//  		chi.PackHandler(gohttp.MethodGet, api.HandlerX),
-//  		chi.PackHandler(gohttp.MethodGet, api.HandlerY),
-//  		chi.PackHandler(gohttp.MethodGet, api.HandlerZ),
+//  	chi.Routing("/v1/",
+//  		rest.WithPackedHandlers(
+//  			chi.PackHandler(gohttp.MethodGet, api.HandlerX),
+//  			chi.PackHandler(gohttp.MethodGet, api.HandlerY),
+//  			chi.PackHandler(gohttp.MethodGet, api.HandlerZ),
+//  		),
 //  	),
 //  )
 //
@@ -43,7 +45,7 @@ func PackHandler(method string, handler rest.Handler, placeholders ...string) re
 //
 //  mux := http.NewServeMux()
 //  mux.HandleFunc(
-//  	rest.V2("/v2/",
+//  	api.V2("/v2/",
 //  		chi.PackHandlerFunc(gohttp.MethodGet, api.HandlerFuncX),
 //  		chi.PackHandlerFunc(gohttp.MethodGet, api.HandlerFuncY),
 //  		chi.PackHandlerFunc(gohttp.MethodGet, api.HandlerFuncZ),
@@ -70,29 +72,31 @@ func PackHandlerFunc(method string, handler rest.HandlerFunc, placeholders ...st
 	}
 }
 
-// Routing.
+// Routing is a glue for a http listener and the router.
 //
-//  func V1(prefix string, options ...Option) Handler {
-//  	return func() (string, http.Handler) {
-//  		cnf := &RouterConfiguration{}
-//  		for _, configure := range options {
-//  			configure(cnf)
-//  		}
+//  mux := http.NewServeMux()
+//  mux.Handle(Routing("/api/", rest.WithMiddlewares(...), rest.WithHandlers(...)))
+//  http.ListenAndServe("localhost:8080", mux)
 //
-//  		r := chi.NewRouter()
-//  		for _, middleware := range cnf.Middlewares {
-//  			r.Use(middleware)
-//  		}
-//
-//  		r.Route(prefix, func(r chi.Router) {
-//  			for _, handler := range cnf.Handlers {
-//  				r.Handle(handler())
-//  			}
-//  			for _, handler := range cnf.PackedHandlers {
-//  				r.Method(handler())
-//  			}
-//  		})
-//
-//  		return prefix, r
-//  	}
-//  }
+func Routing(prefix string, options ...rest.Option) (string, http.Handler) {
+	cnf := &rest.RouterConfiguration{}
+	for _, configure := range options {
+		configure(cnf)
+	}
+
+	r := chi.NewRouter()
+	for _, middleware := range cnf.Middlewares {
+		r.Use(middleware)
+	}
+
+	r.Route(prefix, func(r chi.Router) {
+		for _, handler := range cnf.Handlers {
+			r.Handle(handler())
+		}
+		for _, handler := range cnf.PackedHandlers {
+			r.Method(handler())
+		}
+	})
+
+	return prefix, r
+}
