@@ -2,57 +2,30 @@ package rest
 
 import "net/http"
 
-// Routing.
-//
-//  func V1(prefix string, options ...Option) Handler {
-//  	return func() (string, http.Handler) {
-//  		cnf := &Configuration{}
-//  		for _, configure := range options {
-//  			configure(cnf)
-//  		}
-//
-//  		r := chi.NewRouter()
-//  		for _, middleware := range cnf.Middlewares {
-//  			r.Use(middleware)
-//  		}
-//
-//  		r.Route(prefix, func(r chi.Router) {
-//  			for _, handler := range cnf.Handlers {
-//  				r.Handle(handler())
-//  			}
-//  			for _, handler := range cnf.PackedHandlers {
-//  				r.Method(handler())
-//  			}
-//  		})
-//
-//  		return prefix, r
-//  	}
-//  }
-
-type Middleware func(http.Handler) http.Handler
-
+// Configuration holds a router configuration.
 type Configuration struct {
 	Middlewares    []Middleware
 	Handlers       []Handler
 	PackedHandlers []PackedHandler
 }
 
+// Middleware provides functionality to compose http handlers.
+type Middleware func(http.Handler) http.Handler
+
+// Option applies an option to a router configuration.
 type Option func(*Configuration)
 
+// WithMiddlewares adds middlewares to a router configuration.
 func WithMiddlewares(middlewares ...Middleware) Option {
-	return func(cnf *Configuration) {
-		cnf.Middlewares = append(cnf.Middlewares, middlewares...)
-	}
+	return func(cnf *Configuration) { cnf.Middlewares = append(cnf.Middlewares, middlewares...) }
 }
 
+// WithHandlers adds http handlers with specified paths to a router configuration.
 func WithHandlers(handlers ...Handler) Option {
-	return func(cnf *Configuration) {
-		cnf.Handlers = append(cnf.Handlers, handlers...)
-	}
+	return func(cnf *Configuration) { cnf.Handlers = append(cnf.Handlers, handlers...) }
 }
 
+// WithPackedHandlers adds http handlers with specified http methods and paths to a router configuration.
 func WithPackedHandlers(handlers ...PackedHandler) Option {
-	return func(cnf *Configuration) {
-		cnf.PackedHandlers = append(cnf.PackedHandlers, handlers...)
-	}
+	return func(cnf *Configuration) { cnf.PackedHandlers = append(cnf.PackedHandlers, handlers...) }
 }

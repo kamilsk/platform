@@ -4,6 +4,7 @@
 //  for _, handler := range routing.Handlers() {
 //  	mux.Handle(handler())
 //  }
+//  http.ListenAndServe("/", mux)
 //
 //  -- routing/routes.go --
 //
@@ -21,14 +22,15 @@
 //
 //  mux := http.NewServeMux()
 //  mux.Handle(
-//  	rest.V1("/v1/",
+//  	routing.V1("/v1/",
 //  		chi.PackHandler(http.MethodGet, v1.Pong("/ping")),
 //  	),
 //  )
+//  http.ListenAndServe("/", mux)
 //
 //  -- routing/v1.go --
 //
-//  func V1(prefix string, handlers ...rest.PackedHandler) rest.Handler {
+//  func V1(prefix string, handlers ...rest.PackedHandler) (string, http.Handler) {
 //  	router := chi.NewRouter()
 //  	router.Route(prefix, func(router chi.Router) {
 //  		for _, handler := range handlers {
@@ -41,7 +43,9 @@
 //  -- api/v1/pong.go --
 //
 //  func Pong(path string) rest.Handler {
-//  	return path, http.HandlerFunc(func(rw http.ResponseWriter, _ *http.Request) { _, _ = rw.Write([]byte("pong")) })
+//  	return func() (string, http.Handler) {
+//  		return path, http.HandlerFunc(func(rw http.ResponseWriter, _ *http.Request) { rw.Write([]byte("pong")) })
+//  	}
 //  }
 //
 package rest
