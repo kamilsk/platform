@@ -54,26 +54,13 @@ func TestPaginate(t *testing.T) {
 	for _, test := range tests {
 		tc := test
 		t.Run(test.name, func(t *testing.T) {
-			pagination, err := Paginate(tc.cnf, tc.url, tc.total)
-			assert.NoError(t, err)
+			cnf := tc.cnf.Apply(tc.url.Query())
+			pagination := Paginate(tc.url, cnf, tc.total)
 			assert.Equal(t, tc.expected, pagination)
+			assert.Equal(t, pagination.Prev == "", cnf.Offset() == 0)
+			assert.Equal(t, pagination.Prev != "", cnf.Offset() > 0)
 		})
 	}
-	t.Run("invalid query params", func(t *testing.T) {
-		cnf := PaginationConfiguration{PageKey: "page", PerPageKey: "per_page", PerPage: 3, PerPageMax: 10}
-		var (
-			pagination Pagination
-			err        error
-		)
-
-		pagination, err = Paginate(cnf, &url.URL{Path: "/test", RawQuery: "page=a"}, 10)
-		assert.Empty(t, pagination)
-		assert.Error(t, err)
-
-		pagination, err = Paginate(cnf, &url.URL{Path: "/test", RawQuery: "per_page=a"}, 10)
-		assert.Empty(t, pagination)
-		assert.Error(t, err)
-	})
 }
 
 func TestAddPaginationLink(t *testing.T) {
