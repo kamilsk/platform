@@ -1,5 +1,11 @@
-SHELL := /bin/bash -euo pipefail
-PKGS  := go list ./... | grep -v vendor | grep -v ^_
+SHELL       = /bin/bash -euo pipefail
+PKGS        = go list ./... | grep -v vendor
+GO111MODULE = on
+GOFLAGS     = -mod=vendor
+TIMEOUT     = 1s
+
+
+.DEFAULT_GOAL = test-with-coverage
 
 
 .PHONY: deps
@@ -13,7 +19,7 @@ update:
 
 .PHONY: format
 format:
-	@goimports -local github.com/kamilsk/ -ungroup -w .
+	@goimports -local $(dirname $(go list -m)) -ungroup -w .
 
 .PHONY: generate
 generate:
@@ -25,40 +31,15 @@ refresh: generate format
 
 .PHONY: test
 test:
-	@go test -race -timeout 1s ./...
-
-.PHONY: test-check
-test-check:
-	@go test -run=^hack ./...
+	@go test -race -timeout $(TIMEOUT) ./...
 
 .PHONY: test-with-coverage
 test-with-coverage:
-	@go test -cover -timeout 1s  ./...
-
-.PHONY: test-with-coverage-formatted
-test-with-coverage-formatted:
-	@go test -cover -timeout 1s  ./... | column -t | sort -r
+	@go test -cover -timeout $(TIMEOUT) ./... | column -t | sort -r
 
 .PHONY: test-with-coverage-profile
 test-with-coverage-profile:
-	@go test -covermode count -coverprofile c.out -timeout 1s ./...
-
-.PHONY: test-with-coverage-profile-old
-test-with-coverage-profile-old:
-	@echo 'mode: count' > 'cover.out'
-	@set -e; for package in $$($(PKGS); do \
-	    go test -covermode count \
-	            -coverprofile "coverage_$${package##*/}.out" \
-	            -timeout 1s "$${package}"; \
-	    if [ -f "coverage_$${package##*/}.out" ]; then \
-	        sed '1d' "coverage_$${package##*/}.out" >> cover.out; \
-	        rm "coverage_$${package##*/}.out"; \
-	    fi \
-	done
-
-.PHONY: test-example
-test-example:
-	@go test -covermode count -coverprofile -run=Example -timeout 1s -v example.out ./...
+	@go test -cover -covermode count -coverprofile c.out -timeout $(TIMEOUT) ./...
 
 
 .PHONY: sync
@@ -66,4 +47,4 @@ sync:
 	@git stash && git pull --rebase && git stash pop || true
 
 .PHONY: upgrade
-upgrade: sync update deps refresh test-with-coverage-formatted
+upgrade: sync update deps refresh test-with-coverage
