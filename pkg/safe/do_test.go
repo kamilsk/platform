@@ -10,31 +10,24 @@ import (
 )
 
 func TestSafe(t *testing.T) {
-	tests := []struct {
-		name   string
-		action func() error
-		closer func(error)
+	tests := map[string]struct {
+		action  func() error
+		handler func(error)
 	}{
-		{
-			"with error",
+		"with error": {
 			func() error { return errors.New("error") },
 			func(err error) { assert.EqualError(t, err, "error") },
 		},
-		{
-			"with panic",
+		"with panic": {
 			func() error { panic("test") },
-			func(err error) { assert.EqualError(t, err, "unexpected panic handled: test") },
+			func(err error) { assert.EqualError(t, err, `panic unexpected: "test"`) },
 		},
-		{
-			"without anything",
+		"without anything": {
 			func() error { return nil },
-			func(err error) { assert.NoError(t, err) },
+			func(error) { t.Fail() },
 		},
 	}
-	for _, test := range tests {
-		tc := test
-		t.Run(test.name, func(t *testing.T) {
-			assert.NotPanics(t, func() { Do(tc.action, tc.closer) })
-		})
+	for name, test := range tests {
+		t.Run(name, func(t *testing.T) { assert.NotPanics(t, func() { Do(test.action, test.handler) }) })
 	}
 }

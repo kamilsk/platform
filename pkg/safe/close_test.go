@@ -12,13 +12,13 @@ import (
 func TestClose(t *testing.T) {
 	t.Run("with error", func(t *testing.T) {
 		var called bool
-		fn := (Releaser)(func() error { return errors.New("test") })
+		fn := (Closer)(func() error { return errors.New("test") })
 		Close(fn, func(err error) { called = assert.Error(t, err) })
 		assert.True(t, called)
 	})
 	t.Run("without error", func(t *testing.T) {
 		var called bool
-		fn := (Releaser)(func() error { return nil })
+		fn := (Closer)(func() error { return nil })
 		Close(fn, func(error) { called = true })
 		assert.False(t, called)
 	})
