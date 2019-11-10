@@ -1,8 +1,6 @@
 package cobra
 
-import (
-	"github.com/spf13/cobra"
-)
+import "github.com/spf13/cobra"
 
 const (
 	bashFormat = "bash"
@@ -10,6 +8,7 @@ const (
 )
 
 // NewCompletionCommand returns new completion command.
+// Deprecated: use go.octolab.org/toolkit/cli/cobra.NewCompletionCommand.
 func NewCompletionCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "completion",

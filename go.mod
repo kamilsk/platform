@@ -1,5 +1,7 @@
 module github.com/kamilsk/platform
 
+go 1.11
+
 require (
 	github.com/go-chi/chi v4.0.2+incompatible
 	github.com/golang/mock v1.3.1
