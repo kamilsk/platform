@@ -36,6 +36,7 @@ func (m *MockServer) EXPECT() *MockServerMockRecorder {
 
 // ListenAndServe mocks base method
 func (m *MockServer) ListenAndServe() error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "ListenAndServe")
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -43,11 +44,13 @@ func (m *MockServer) ListenAndServe() error {
 
 // ListenAndServe indicates an expected call of ListenAndServe
 func (mr *MockServerMockRecorder) ListenAndServe() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListenAndServe", reflect.TypeOf((*MockServer)(nil).ListenAndServe))
 }
 
 // Shutdown mocks base method
 func (m *MockServer) Shutdown(arg0 context.Context) error {
+	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Shutdown", arg0)
 	ret0, _ := ret[0].(error)
 	return ret0
@@ -55,5 +58,6 @@ func (m *MockServer) Shutdown(arg0 context.Context) error {
 
 // Shutdown indicates an expected call of Shutdown
 func (mr *MockServerMockRecorder) Shutdown(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Shutdown", reflect.TypeOf((*MockServer)(nil).Shutdown), arg0)
 }
