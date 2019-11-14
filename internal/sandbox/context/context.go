@@ -5,7 +5,7 @@ import "context"
 type ChainedContext interface {
 	context.Context
 
-	Add(context.Context) ChainedContext
+	Add(func() context.Context) ChainedContext
 	Next() ChainedContext
 	Origin() context.Context
 }
@@ -18,20 +18,21 @@ func From(ctx context.Context) ChainedContext {
 	if chain, is := ctx.(ChainedContext); is {
 		return chain
 	}
-	return Chain(ctx).Add(context.TODO())
+	return Chain(ctx).Add(func() context.Context { return Closable(context.WithCancel(context.Background())) })
 }
 
 type node struct {
 	context.Context
-	next *node
+	builder func() context.Context
+	next    *node
 }
 
-func (chain *node) Add(ctx context.Context) ChainedContext {
-	next := &chain.next
-	for *next != nil {
-		next = &(*next).next
+func (chain *node) Add(next func() context.Context) ChainedContext {
+	link := &chain.next
+	for *link != nil {
+		link = &(*link).next
 	}
-	*next = &node{Context: ctx}
+	*link = &node{builder: next}
 	return chain
 }
 
@@ -40,5 +41,8 @@ func (chain *node) Next() ChainedContext {
 }
 
 func (chain *node) Origin() context.Context {
+	if chain.Context == nil {
+		chain.Context = chain.builder()
+	}
 	return chain.Context
 }
