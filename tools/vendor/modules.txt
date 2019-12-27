@@ -149,7 +149,7 @@ github.com/nbutton23/zxcvbn-go/match
 github.com/nbutton23/zxcvbn-go/matching
 github.com/nbutton23/zxcvbn-go/scoring
 github.com/nbutton23/zxcvbn-go/utils/math
-# github.com/pelletier/go-toml v1.2.0 => github.com/kamilsk/go-toml v1.4.0-asd-patch
+# github.com/pelletier/go-toml v1.2.0
 github.com/pelletier/go-toml
 # github.com/pkg/errors v0.8.1
 github.com/pkg/errors
@@ -162,7 +162,7 @@ github.com/securego/gosec/rules
 github.com/sirupsen/logrus
 # github.com/sourcegraph/go-diff v0.5.1
 github.com/sourcegraph/go-diff/diff
-# github.com/spf13/afero v1.2.2
+# github.com/spf13/afero v1.1.2
 github.com/spf13/afero
 github.com/spf13/afero/mem
 # github.com/spf13/cast v1.3.0
@@ -194,7 +194,7 @@ golang.org/x/sys/unix
 golang.org/x/text/transform
 golang.org/x/text/unicode/norm
 golang.org/x/text/width
-# golang.org/x/tools v0.0.0-20191010075000-0337d82405ff => github.com/kamilsk/go-tools v0.0.0-20190921135421-dca3d7403570
+# golang.org/x/tools v0.2.2 => github.com/kamilsk/go-tools v0.0.1
 golang.org/x/tools/cmd/goimports
 golang.org/x/tools/go/analysis
 golang.org/x/tools/go/analysis/passes/asmdecl

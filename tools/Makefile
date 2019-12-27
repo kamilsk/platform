@@ -1,49 +1,52 @@
-BINPATH     = $(shell dirname $(PWD))/bin
+.DEFAULT_GOAL = install
+
+SHELL = /bin/bash -euo pipefail
+
 GO111MODULE = on
-GOFLAGS     = -mod=
-GOPROXY     = https://proxy.golang.org,https://gocenter.io,direct
-SHELL       = /bin/bash -euo pipefail
+GOFLAGS     = -mod=vendor
+GOPRIVATE   =
+GOPROXY     = direct
+GOTAGS      = -tags integration,tools
+MODULE      = $(shell go list -m)
+PACKAGES    = $(shell go list $(GOTAGS) ./...)
+PATHS       = $(shell go list $(GOTAGS) ./... | sed -e "s|$(shell go list -m)/\{0,1\}||g")
+TIMEOUT     = 1s
+VENDOR      = $(dir $(MODULE))
+
+.PHONY: go-env
+go-env:
+	@echo "GO111MODULE: $(shell go env GO111MODULE)"
+	@echo "GOFLAGS:     $(strip $(shell go env GOFLAGS))"
+	@echo "GOPRIVATE:   $(strip $(shell go env GOPRIVATE))"
+	@echo "GOPROXY:     $(strip $(shell go env GOPROXY))"
+	@echo "GOTAGS:      $(GOTAGS)"
+	@echo "MODULE:      $(MODULE)"
+	@echo "PACKAGES:    $(PACKAGES)"
+	@echo "PATHS:       $(strip $(PATHS))"
+	@echo "TIMEOUT:     $(TIMEOUT)"
+	@echo "VENDOR:      $(VENDOR)"
+
+BINPATH = $(shell dirname $(PWD))/bin
 
 export PATH := $(BINPATH):$(PATH)
 
-.DEFAULT_GOAL = install
-
-.PHONY: env
-env:
+.PHONY: tools-env
+tools-env:
 	@echo "BINPATH:     $(BINPATH)"
-	@echo "GO111MODULE: $(shell go env GO111MODULE)"
-	@echo "GOFLAGS:     $(shell go env GOFLAGS)"
-	@echo "GOPRIVATE:   $(shell go env GOPRIVATE)"
-	@echo "GOPROXY:     $(shell go env GOPROXY)"
-	@echo "GONOPROXY:   $(shell go env GONOPROXY)"
-	@echo "GOSUMDB:     $(shell go env GOSUMDB)"
-	@echo "GONOSUMDB:   $(shell go env GONOSUMDB)"
-	@echo "PATH:        $(PATH)"
-	@echo "SHELL:       $(SHELL)"
-
-
-.PHONY: brew
-brew:
-	@brew bundle
 
 .PHONY: deps
 deps:
 	@go mod tidy && go mod vendor && go mod verify
 
-.PHONY: deps-update
-deps-update:
-	@go get -u all
-
-.PHONY: egg
-egg:
-	@go get -d -u github.com/kamilsk/egg
-	@go build -o $(BINPATH)/egg github.com/kamilsk/egg
-
-
-.PHONY: build
-build:
-	@GOFLAGS='-mod=vendor' egg --build
-	@mv bin/* $(BINPATH) && rm -rf bin
+.PHONY: update
+update:
+	@go get $(GOTAGS) -mod= -u
 
 .PHONY: install
-install: brew egg deps build
+install:
+	@go generate ./tools.go
+	@mv bin/* $(BINPATH) && rm -rf bin
+
+
+.PHONY: env
+env: go-env tools-env
