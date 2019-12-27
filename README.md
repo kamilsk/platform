@@ -1,19 +1,19 @@
 > # 🧰 platform
 >
-> Toolkit for all my microservice family.
+> Toolkit for microservices.
 
 [![Build][icon_build]][page_build]
 [![Quality][icon_quality]][page_quality]
 [![Documentation][icon_docs]][page_docs]
 [![Coverage][icon_coverage]][page_coverage]
 
-## 🤲 Used by
+## 🚧 Deprecated
 
-- [Avito][avito]
-- [Click!][click]
-- [Forma][forma]
-- [Guard][guard]
-- [Passport][passport]
+The module is deprecated and no longer maintained, please use its alternatives
+
+- [go.octolab.org](https://github.com/octolab/pkg)
+- [go.octolab.org/toolkit/cli](https://github.com/octolab/cli)
+- [go.octolab.org/toolkit/protocol](https://github.com/octolab/protocol)
 
 ---
 
@@ -28,10 +28,3 @@ made with ❤️ for everyone
 [page_coverage]:   https://codeclimate.com/github/kamilsk/platform/test_coverage
 [page_docs]:       https://godoc.org/github.com/kamilsk/platform
 [page_quality]:    https://goreportcard.com/report/github.com/kamilsk/platform
-
-[avito]:           https://github.com/avito-tech
-[click]:           https://github.com/kamilsk/click
-[forma]:           https://github.com/kamilsk/form-api
-[guard]:           https://github.com/kamilsk/guard
-[passport]:        https://github.com/kamilsk/passport
-[promo]:           https://github.com/kamilsk/platform
