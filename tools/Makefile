@@ -44,8 +44,7 @@ update:
 
 .PHONY: install
 install:
-	@go generate ./tools.go
-	@mv bin/* $(BINPATH) && rm -rf bin
+	@ROOT=$(dir $(BINPATH)) go generate ./tools.go
 
 
 .PHONY: env

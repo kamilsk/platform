@@ -15,8 +15,8 @@ require (
 	gopkg.in/yaml.v2 v2.2.5
 )
 
-// Deprecated: the module is deprecated and no longer maintained,
-// please use its alternatives
+// Deprecated: the module is deprecated and no longer maintained;
+// please use its alternatives.
 //  - go.octolab.org
 //  - go.octolab.org/toolkit/cli
 //  - go.octolab.org/toolkit/protocol

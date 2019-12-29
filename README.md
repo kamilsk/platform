@@ -9,7 +9,7 @@
 
 ## 🚧 Deprecated
 
-The module is deprecated and no longer maintained, please use its alternatives
+The module is deprecated and no longer maintained; please use its alternatives:
 
 - [go.octolab.org](https://github.com/octolab/pkg)
 - [go.octolab.org/toolkit/cli](https://github.com/octolab/cli)
