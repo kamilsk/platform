@@ -1,8 +1,10 @@
+SHELL       = /bin/bash -euo pipefail
 BINPATH     = $(PWD)/bin
 GO111MODULE = on
 GOFLAGS     = -mod=vendor
 GOPROXY     = https://proxy.golang.org,https://gocenter.io,direct
 MODULE      = $(shell go list -m)
+PKGS        = $(shell go list ./... | grep -v vendor)
 PATHS       = $(shell go list ./... | sed -e "s|$(shell go list -m)/\{0,1\}||g")
 SHELL       = /bin/bash -euo pipefail
 TIMEOUT     = 1s
@@ -50,7 +52,7 @@ format:
 
 .PHONY: generate
 generate:
-	@go generate $(MODULE)/...
+	@go generate $(PKGS)
 
 .PHONY: refresh
 refresh: deps-update deps generate format test-with-coverage
@@ -58,12 +60,12 @@ refresh: deps-update deps generate format test-with-coverage
 
 .PHONY: test
 test:
-	@go test -race -timeout $(TIMEOUT) $(MODULE)/...
+	@go test -race -timeout $(TIMEOUT) $(PKGS)
 
 .PHONY: test-with-coverage
 test-with-coverage:
-	@go test -cover -timeout $(TIMEOUT) $(MODULE)/... | column -t | sort -r
+	@go test -cover -timeout $(TIMEOUT) $(PKGS) | column -t | sort -r
 
 .PHONY: test-with-coverage-profile
 test-with-coverage-profile:
-	@go test -cover -covermode count -coverprofile c.out -timeout $(TIMEOUT) $(MODULE)/...
+	@go test -cover -covermode count -coverprofile c.out -timeout $(TIMEOUT) $(PKGS)

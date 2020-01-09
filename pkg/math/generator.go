@@ -32,3 +32,8 @@ func (generator *Generator) Jump(distance uint64) uint64 {
 func (generator *Generator) Next() uint64 {
 	return atomic.AddUint64((*uint64)(generator), 1)
 }
+
+// Reset returns a current value of the Generator and resets it.
+func (generator *Generator) Reset() uint64 {
+	return atomic.SwapUint64((*uint64)(generator), 0)
+}
