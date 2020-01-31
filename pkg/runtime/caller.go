@@ -11,6 +11,7 @@ import "runtime"
 //  	// do something heavy
 //  }
 //
+// Deprecated: use go.octolab.org/runtime.Caller instead.
 func Caller() CallerInfo {
 	pc := make([]uintptr, 1)
 	runtime.Callers(2, pc)
@@ -37,6 +38,7 @@ func Caller() CallerInfo {
 }
 
 // CallerInfo holds information about a caller.
+// Deprecated: use go.octolab.org/runtime.CallerInfo instead.
 type CallerInfo struct {
 	Name string
 	File string

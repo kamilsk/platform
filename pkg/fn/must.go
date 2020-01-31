@@ -9,6 +9,7 @@ import "github.com/pkg/errors"
 //  	Must(func() error { return cmd.MarkFlagRequired("format") })
 //  }
 //
+// Deprecated: use go.octolab.org/fn.Must instead.
 func Must(actions ...func() error) {
 	for _, action := range actions {
 		if err := errors.WithStack(action()); err != nil {
