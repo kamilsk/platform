@@ -1,8 +1,6 @@
 package math
 
-import (
-	"sort"
-)
+import "sort"
 
 // Sequence returns an empty slice with the specified size.
 //
@@ -10,6 +8,7 @@ import (
 //  	// do something five times
 //  }
 //
+// Deprecated: use go.octolab.org/sequence.Simple instead.
 func Sequence(size int) []int {
 	return make([]int, size)
 }
@@ -21,6 +20,7 @@ func Sequence(size int) []int {
 //  	process(target[batch*step:end])
 //  }
 //
+// Deprecated: use go.octolab.org/sequence.Range instead.
 func BatchSequence(size, batch int) []int {
 	count := size / batch
 	if size%batch != 0 {
@@ -45,6 +45,7 @@ func BatchSequence(size, batch int) []int {
 //  	}
 //  }
 //
+// Deprecated: use go.octolab.org/sequence.ReduceInts instead.
 func Reduce(sequence ...int) interface {
 	// Average returns an average value of the sequence.
 	Average() float64

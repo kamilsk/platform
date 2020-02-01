@@ -13,6 +13,8 @@ import (
 var ErrSignalTrapped = errors.New("signal trapped")
 
 // Termination returns trap for termination signals.
+//
+// Deprecated: use go.octolab.org/sync.Termination instead.
 func Termination() SignalTrap {
 	trap := make(chan os.Signal, 3)
 	signal.Notify(trap, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
@@ -25,6 +27,7 @@ func Termination() SignalTrap {
 //  signal.Notify(trap, os.Interrupt)
 //  trap.Wait(context.Background())
 //
+// Deprecated: use go.octolab.org/sync.SignalTrap instead.
 type SignalTrap chan os.Signal
 
 // Wait blocks until one of the expected signals caught

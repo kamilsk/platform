@@ -10,6 +10,7 @@ import "sync/atomic"
 //  	sequence = append(sequence, ID(generator.Next()))
 //  }
 //
+// Deprecated: use go.octolab.org/sequence.GeneratorUint64 instead.
 type Generator uint64
 
 // At sets the Generator to the new position.
