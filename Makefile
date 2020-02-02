@@ -48,7 +48,7 @@ deps-update:
 
 .PHONY: format
 format:
-	@goimports -local $(dir $(shell go list -m)) -ungroup -w $(PATHS)
+	@goimports -local $(shell go list -m) -ungroup -w $(PATHS)
 
 .PHONY: generate
 generate:
