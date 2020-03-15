@@ -19,6 +19,8 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/golang/mock/gomock/internal/validate"
 )
 
 // Call represents an expected call to a mock.
@@ -82,8 +84,8 @@ func (c *Call) AnyTimes() *Call {
 	return c
 }
 
-// MinTimes requires the call to occur at least n times. If AnyTimes or MaxTimes have not been called, MinTimes also
-// sets the maximum number of calls to infinity.
+// MinTimes requires the call to occur at least n times. If AnyTimes or MaxTimes have not been called or if MaxTimes
+// was previously called with 1, MinTimes also sets the maximum number of calls to infinity.
 func (c *Call) MinTimes(n int) *Call {
 	c.minCalls = n
 	if c.maxCalls == 1 {
@@ -92,8 +94,8 @@ func (c *Call) MinTimes(n int) *Call {
 	return c
 }
 
-// MaxTimes limits the number of calls to n times. If AnyTimes or MinTimes have not been called, MaxTimes also
-// sets the minimum number of calls to 0.
+// MaxTimes limits the number of calls to n times. If AnyTimes or MinTimes have not been called or if MinTimes was
+// previously called with 1, MaxTimes also sets the minimum number of calls to 0.
 func (c *Call) MaxTimes(n int) *Call {
 	c.maxCalls = n
 	if c.minCalls == 1 {
@@ -105,9 +107,23 @@ func (c *Call) MaxTimes(n int) *Call {
 // DoAndReturn declares the action to run when the call is matched.
 // The return values from this function are returned by the mocked function.
 // It takes an interface{} argument to support n-arity functions.
+// If the method signature of f is not compatible with the mocked function a
+// panic will be triggered. Both the arguments and return values of f are
+// validated.
 func (c *Call) DoAndReturn(f interface{}) *Call {
-	// TODO: Check arity and types here, rather than dying badly elsewhere.
 	v := reflect.ValueOf(f)
+
+	switch v.Kind() {
+	case reflect.Func:
+		mt := c.methodType
+
+		ft := v.Type()
+		if err := validate.InputAndOutputSig(ft, mt); err != nil {
+			panic(fmt.Sprintf("DoAndReturn: %s", err))
+		}
+	default:
+		panic("DoAndReturn: argument must be a function")
+	}
 
 	c.addAction(func(args []interface{}) []interface{} {
 		vargs := make([]reflect.Value, len(args))
@@ -134,9 +150,23 @@ func (c *Call) DoAndReturn(f interface{}) *Call {
 // return values are ignored to retain backward compatibility. To use the
 // return values call DoAndReturn.
 // It takes an interface{} argument to support n-arity functions.
+// If the method signature of f is not compatible with the mocked function a
+// panic will be triggered. Only the arguments of f are validated; not the return
+// values.
 func (c *Call) Do(f interface{}) *Call {
-	// TODO: Check arity and types here, rather than dying badly elsewhere.
 	v := reflect.ValueOf(f)
+
+	switch v.Kind() {
+	case reflect.Func:
+		mt := c.methodType
+
+		ft := v.Type()
+		if err := validate.InputSig(ft, mt); err != nil {
+			panic(fmt.Sprintf("Do: %s", err))
+		}
+	default:
+		panic("Do: argument must be a function")
+	}
 
 	c.addAction(func(args []interface{}) []interface{} {
 		vargs := make([]reflect.Value, len(args))
@@ -276,7 +306,7 @@ func (c *Call) satisfied() bool {
 	return c.numCalls >= c.minCalls
 }
 
-// Returns true iff the maximum number of calls have been made.
+// Returns true if the maximum number of calls have been made.
 func (c *Call) exhausted() bool {
 	return c.numCalls >= c.maxCalls
 }
@@ -295,27 +325,34 @@ func (c *Call) String() string {
 func (c *Call) matches(args []interface{}) error {
 	if !c.methodType.IsVariadic() {
 		if len(args) != len(c.args) {
-			return fmt.Errorf("Expected call at %s has the wrong number of arguments. Got: %d, want: %d",
+			return fmt.Errorf("expected call at %s has the wrong number of arguments. Got: %d, want: %d",
 				c.origin, len(args), len(c.args))
 		}
 
 		for i, m := range c.args {
 			if !m.Matches(args[i]) {
-				return fmt.Errorf("Expected call at %s doesn't match the argument at index %s.\nGot: %v\nWant: %v",
-					c.origin, strconv.Itoa(i), args[i], m)
+				got := fmt.Sprintf("%v", args[i])
+				if gs, ok := m.(GotFormatter); ok {
+					got = gs.Got(args[i])
+				}
+
+				return fmt.Errorf(
+					"expected call at %s doesn't match the argument at index %d.\nGot: %v\nWant: %v",
+					c.origin, i, got, m,
+				)
 			}
 		}
 	} else {
 		if len(c.args) < c.methodType.NumIn()-1 {
-			return fmt.Errorf("Expected call at %s has the wrong number of matchers. Got: %d, want: %d",
+			return fmt.Errorf("expected call at %s has the wrong number of matchers. Got: %d, want: %d",
 				c.origin, len(c.args), c.methodType.NumIn()-1)
 		}
 		if len(c.args) != c.methodType.NumIn() && len(args) != len(c.args) {
-			return fmt.Errorf("Expected call at %s has the wrong number of arguments. Got: %d, want: %d",
+			return fmt.Errorf("expected call at %s has the wrong number of arguments. Got: %d, want: %d",
 				c.origin, len(args), len(c.args))
 		}
 		if len(args) < len(c.args)-1 {
-			return fmt.Errorf("Expected call at %s has the wrong number of arguments. Got: %d, want: greater than or equal to %d",
+			return fmt.Errorf("expected call at %s has the wrong number of arguments. Got: %d, want: greater than or equal to %d",
 				c.origin, len(args), len(c.args)-1)
 		}
 
@@ -323,7 +360,7 @@ func (c *Call) matches(args []interface{}) error {
 			if i < c.methodType.NumIn()-1 {
 				// Non-variadic args
 				if !m.Matches(args[i]) {
-					return fmt.Errorf("Expected call at %s doesn't match the argument at index %s.\nGot: %v\nWant: %v",
+					return fmt.Errorf("expected call at %s doesn't match the argument at index %s.\nGot: %v\nWant: %v",
 						c.origin, strconv.Itoa(i), args[i], m)
 				}
 				continue
@@ -382,7 +419,7 @@ func (c *Call) matches(args []interface{}) error {
 
 	// Check that the call is not exhausted.
 	if c.exhausted() {
-		return fmt.Errorf("Expected call at %s has already been called the max number of times.", c.origin)
+		return fmt.Errorf("expected call at %s has already been called the max number of times", c.origin)
 	}
 
 	return nil
@@ -396,7 +433,7 @@ func (c *Call) dropPrereqs() (preReqs []*Call) {
 	return
 }
 
-func (c *Call) call(args []interface{}) []func([]interface{}) []interface{} {
+func (c *Call) call() []func([]interface{}) []interface{} {
 	c.numCalls++
 	return c.actions
 }
