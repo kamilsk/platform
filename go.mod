@@ -16,4 +16,5 @@ require (
 // please use its alternatives.
 //  - go.octolab.org
 //  - go.octolab.org/toolkit/cli
+//  - go.octolab.org/toolkit/config
 //  - go.octolab.org/toolkit/protocol

@@ -14,6 +14,7 @@ The module is deprecated and no longer maintained; please use its alternatives:
 
 - [go.octolab.org](https://github.com/octolab/pkg)
 - [go.octolab.org/toolkit/cli](https://github.com/octolab/cli)
+- [go.octolab.org/toolkit/config](https://github.com/octolab/config)
 - [go.octolab.org/toolkit/protocol](https://github.com/octolab/protocol)
 
 ---
