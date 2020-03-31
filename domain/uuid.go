@@ -5,6 +5,8 @@ import "regexp"
 var uuid = regexp.MustCompile(`(?i:^[0-9A-F]{8}-[0-9A-F]{4}-[4][0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$)`)
 
 // UUID wraps built-in string type and provides useful methods above it.
+//
+// Deprecated: use github.com/google/uuid.UUID instead.
 type UUID string
 
 // IsEmpty returns true if the UUID has empty value.
