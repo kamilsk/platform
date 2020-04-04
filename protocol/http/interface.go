@@ -3,6 +3,8 @@ package http
 import "net/http"
 
 // Router is an HTTP request multiplexer.
+//
+// Deprecated: use go.octolab.org/toolkit/protocol/http/router.Interface instead.
 type Router interface {
 	// Handle registers the handler for the given pattern.
 	Handle(string, http.Handler)
@@ -11,6 +13,8 @@ type Router interface {
 }
 
 // Endpoint represents HTTP listener that can register its routes.
+//
+// Deprecated: doesn't have canonical implementation.
 type Endpoint interface {
 	// Register registers itself in the router.
 	Register(Router)
