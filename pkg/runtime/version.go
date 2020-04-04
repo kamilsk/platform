@@ -7,6 +7,7 @@ import (
 )
 
 // Version returns information about the current Go version.
+//
 // Deprecated: use go.octolab.org/runtime.Version instead.
 func Version() GoVersion {
 	var version = GoVersion{Raw: runtime.Version()}
@@ -22,6 +23,7 @@ func Version() GoVersion {
 }
 
 // GoVersion holds information about a Go version.
+//
 // Deprecated: use go.octolab.org/runtime.GoVersion instead.
 type GoVersion struct {
 	Major int

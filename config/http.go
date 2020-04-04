@@ -3,6 +3,7 @@ package config
 import "time"
 
 // HTTPServerConfig contains configuration for a common HTTP server.
+//
 // Deprecated: use go.octolab.org/toolkit/config/http.Server instead.
 type HTTPServerConfig struct {
 	Address           string        `json:"address"             yaml:"address"`

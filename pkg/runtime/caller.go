@@ -38,6 +38,7 @@ func Caller() CallerInfo {
 }
 
 // CallerInfo holds information about a caller.
+//
 // Deprecated: use go.octolab.org/runtime.CallerInfo instead.
 type CallerInfo struct {
 	Name string

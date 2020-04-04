@@ -1,6 +1,7 @@
 package config
 
 // Secret tries to hide the self's content while printing.
+//
 // Deprecated: use go.octolab.org/toolkit/config.Secret instead.
 type Secret string
 

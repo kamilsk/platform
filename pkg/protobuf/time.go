@@ -9,6 +9,7 @@ import (
 )
 
 // Time converts protobuf Timestamp into built-in Time.
+//
 // Deprecated: use go.octolab.org/toolkit/protocol/protobuf.Time instead.
 func Time(ts *timestamp.Timestamp) *time.Time {
 	if ts == nil {
@@ -22,6 +23,7 @@ func Time(ts *timestamp.Timestamp) *time.Time {
 }
 
 // Timestamp converts built-in Time into protobuf Timestamp.
+//
 // Deprecated: use go.octolab.org/toolkit/protocol/protobuf.Timestamp instead.
 func Timestamp(tp *time.Time) *timestamp.Timestamp {
 	if tp == nil {

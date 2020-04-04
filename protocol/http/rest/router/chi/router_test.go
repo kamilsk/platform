@@ -16,7 +16,8 @@ func TestPackHandler(t *testing.T) {
 	t.Run("normal case", func(t *testing.T) {
 		api := "/v1/"
 		mux := http.NewServeMux()
-		mux.Handle(Routing(api,
+		apiHandler := Handler(
+			api,
 			rest.WithMiddlewares(
 				rest.NilMiddlewareFilter(
 					nil,
@@ -28,7 +29,8 @@ func TestPackHandler(t *testing.T) {
 				PackHandler(http.MethodGet, pingHandler("/{id}", json.Marshal, t), "id", key),
 				PackHandler(http.MethodGet, welcomeHandler("/{greeting}/{person}", t), "greeting", welcome, "person", name),
 			),
-		))
+		)
+		mux.Handle(apiHandler())
 		assert.JSONEq(t, `{"test":"pong"}`, assert.HTTPBody(mux.ServeHTTP, http.MethodGet, path.Join(api, "test"), nil))
 		assert.Equal(t, "Hello, World!", assert.HTTPBody(mux.ServeHTTP, http.MethodGet, path.Join(api, "Hello", "World"), nil))
 	})

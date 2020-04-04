@@ -8,6 +8,7 @@ const (
 )
 
 // NewCompletionCommand returns new completion command.
+//
 // Deprecated: use go.octolab.org/toolkit/cli/cobra.NewCompletionCommand instead.
 func NewCompletionCommand() *cobra.Command {
 	cmd := &cobra.Command{
