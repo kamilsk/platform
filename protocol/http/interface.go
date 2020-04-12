@@ -14,7 +14,8 @@ type Router interface {
 
 // Endpoint represents HTTP listener that can register its routes.
 //
-// Deprecated: doesn't have canonical implementation.
+// Deprecated: doesn't have canonical implementation, use
+// go.octolab.org/toolkit/protocol/http/router instead.
 type Endpoint interface {
 	// Register registers itself in the router.
 	Register(Router)

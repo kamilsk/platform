@@ -9,16 +9,22 @@ import (
 )
 
 // Callback contains a channel to return a result of shutdown operation.
+//
+// Deprecated: use go.octolab.org/toolkit/protocol/http/server instead.
 type Callback struct {
 	context.Context
 	Result chan error
 }
 
 // Shutdown is a channel to receive a signal to initiate graceful server shutdown.
+//
+// Deprecated: use go.octolab.org/toolkit/protocol/http/server instead.
 type Shutdown chan Callback
 
 // Run runs ListenAndServe in separated goroutine and listens shutdown signal.
 // It returns ListenAndServe' error or Shutdown' error if signal is received.
+//
+// Deprecated: use go.octolab.org/toolkit/protocol/http/server.Run instead.
 func Run(server Server, shutdown Shutdown) error {
 	serve := make(chan error, 1)
 
