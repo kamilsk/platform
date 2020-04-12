@@ -9,12 +9,16 @@ import (
 )
 
 // New returns a listener of the termination signals.
+//
+// Deprecated: use go.octolab.org/sync.Termination instead.
 func New() *Listener {
 	return &Listener{}
 }
 
 // Listener listens the termination signals and holds resources
 // to release their later when the termination signals caught.
+//
+// Deprecated: use go.octolab.org/sync.SignalTrap instead.
 type Listener struct {
 	resources []resource
 }
