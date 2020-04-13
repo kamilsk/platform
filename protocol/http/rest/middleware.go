@@ -4,5 +4,5 @@ import "net/http"
 
 // Middleware provides functionality to compose http handlers.
 //
-// Deprecated: use go.octolab.org/toolkit/protocol/http/middleware.Middleware instead.
+// Deprecated: use go.octolab.org/toolkit/protocol/http/middleware.Type instead.
 type Middleware func(http.Handler) http.Handler

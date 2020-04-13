@@ -10,6 +10,8 @@ import (
 )
 
 // Handler returns handler based on github.com/go-chi/chi.
+//
+// Deprecated: use go.octolab.org/toolkit/protocol/http/router/rest instead.
 func Handler(prefix string, options ...rest.Option) http.Handler {
 	return func() (string, gohttp.Handler) { return Routing(prefix, options...) }
 }
@@ -27,6 +29,7 @@ func Handler(prefix string, options ...rest.Option) http.Handler {
 //  	),
 //  )
 //
+// Deprecated: use go.octolab.org/toolkit/protocol/http/middleware/chi.Converter instead.
 func PackHandler(method string, handler http.Handler, placeholders ...string) rest.Handler {
 	if len(placeholders)%2 != 0 {
 		panic("count of passed placeholders must be even")
@@ -58,6 +61,7 @@ func PackHandler(method string, handler http.Handler, placeholders ...string) re
 //  	),
 //  )
 //
+// Deprecated: use go.octolab.org/toolkit/protocol/http/middleware/chi.Converter instead.
 func PackHandlerFunc(method string, handler http.HandlerFunc, placeholders ...string) rest.HandlerFunc {
 	if len(placeholders)%2 != 0 {
 		panic("count of passed placeholders must be even")
@@ -84,6 +88,7 @@ func PackHandlerFunc(method string, handler http.HandlerFunc, placeholders ...st
 //  mux.Handle(chi.Routing("/api/", rest.WithMiddlewares(...), rest.WithHandlers(...)))
 //  http.ListenAndServe("localhost:8080", mux)
 //
+// Deprecated: use go.octolab.org/toolkit/protocol/http/router/rest instead.
 func Routing(prefix string, options ...rest.Option) (string, gohttp.Handler) {
 	cnf := &rest.RouterConfiguration{}
 	for _, configure := range options {
