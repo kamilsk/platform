@@ -9,9 +9,13 @@ import (
 )
 
 // Pagination holds information about page navigation.
+//
+// Deprecated: use go.octolab.org/toolkit/protocol/http/router/rest instead.
 type Pagination struct{ First, Prev, Next, Last string }
 
 // PaginationConfiguration holds a pagination configuration.
+//
+// Deprecated: use go.octolab.org/toolkit/protocol/http/router/rest instead.
 type PaginationConfiguration struct {
 	PageKey, PerPageKey string
 	PerPage, PerPageMax int
@@ -80,6 +84,8 @@ func Paginate(url *url.URL, cnf PaginationConfiguration, total int) Pagination {
 }
 
 // AddPaginationLink tries to add pagination links into the header.
+//
+// Deprecated: use go.octolab.org/toolkit/protocol/http/router/rest instead.
 func AddPaginationLink(header http.Header, pagination Pagination) {
 	order := [...]string{"first", "prev", "next", "last"}
 	rel := map[string]*string{
