@@ -5,6 +5,7 @@
 SHELL = /bin/bash -euo pipefail
 
 GO111MODULE = on
+GOFLAGS     = -mod=
 GOPRIVATE   = go.octolab.net
 GOPROXY     = direct
 LOCAL       = $(MODULE)
@@ -22,12 +23,14 @@ ifeq (, $(PATHS))
 endif
 
 export GO111MODULE := $(GO111MODULE)
+export GOFLAGS     := $(GOFLAGS)
 export GOPRIVATE   := $(GOPRIVATE)
 export GOPROXY     := $(GOPROXY)
 
 .PHONY: go-env
 go-env:
 	@echo "GO111MODULE: `go env GO111MODULE`"
+	@echo "GOFLAGS:     $(strip `go env GOFLAGS`)"
 	@echo "GOPRIVATE:   $(strip `go env GOPRIVATE`)"
 	@echo "GOPROXY:     $(strip `go env GOPROXY`)"
 	@echo "LOCAL:       $(LOCAL)"
@@ -51,6 +54,7 @@ deps-clean:
 .PHONY: deps-shake
 deps-shake:
 	@go mod tidy
+	@if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
 
 .PHONY: module-deps
 module-deps:
@@ -63,16 +67,31 @@ update:
 	@if command -v egg > /dev/null; then \
 		packages="`egg deps list`"; \
 	else \
-		packages="`go list -f $(selector) -m all`"; \
-	fi; go get -d -u $$packages
+		packages="`go list -f $(selector) -m -mod=readonly all`"; \
+	fi; \
+	if [[ "`go version`" == *1.1[1-3]* ]]; then \
+		go get -d -mod= -u $$packages; \
+	else \
+		go get -d -u $$packages; \
+	fi; \
+	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
 
 .PHONY: update-all
 update-all:
-	@go get -d -u ./...
+	@if [[ "`go version`" == *1.1[1-3]* ]]; then \
+		go get -d -mod= -u ./...; \
+	else \
+		go get -d -u ./...; \
+	fi; \
+	if [[ "`go env GOFLAGS`" =~ -mod=vendor ]]; then go mod vendor; fi
 
 .PHONY: format
 format:
-	@goimports -local $(LOCAL) -ungroup -w $(PATHS)
+	@if command -v goimports > /dev/null; then \
+		goimports -local $(LOCAL) -ungroup -w $(PATHS); \
+	else \
+		gofmt -s -w $(PATHS); \
+	fi
 
 .PHONY: go-generate
 go-generate:
@@ -80,7 +99,11 @@ go-generate:
 
 .PHONY: lint
 lint:
-	@golangci-lint run ./...
+	@if command -v golangci-lint > /dev/null; then \
+		golangci-lint run ./...; \
+	else \
+		go vet $(PACKAGES); \
+	fi
 
 .PHONY: test
 test:
@@ -97,6 +120,19 @@ test-with-coverage:
 .PHONY: test-with-coverage-profile
 test-with-coverage-profile:
 	@go test -cover -covermode count -coverprofile c.out -timeout $(TIMEOUT) $(PACKAGES)
+
+define go_tpl
+.PHONY: go$(1)
+go$(1):
+	docker run \
+		--rm -it \
+		-v $(PWD):/src \
+		-w /src \
+		golang:$(1) bash
+endef
+
+render_go_tpl = $(eval $(call go_tpl,$(version)))
+$(foreach version,1.11 1.12 1.13 1.14,$(render_go_tpl))
 
 
 .PHONY: clean
