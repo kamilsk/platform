@@ -3,7 +3,7 @@
 > Toolkit for microservices.
 
 [![Documentation][docs.icon]][docs.page]
-[![Template][template.icon]][template.page]
+[![Mirror][mirror.icon]][mirror.page]
 
 ## 🚧 Deprecated
 
@@ -16,5 +16,5 @@ The module is deprecated and no longer maintained; please use its alternatives:
 
 [docs.page]:        https://pkg.go.dev/github.com/kamilsk/platform
 [docs.icon]:        https://img.shields.io/badge/docs-pkg.go.dev-blue
-[template.page]:    https://github.com/octomation/go-module
-[template.icon]:    https://img.shields.io/badge/template-go--module-blue
+[mirror.page]:      https://bitbucket.org/kamilsk/platform
+[mirror.icon]:      https://img.shields.io/badge/mirror-bitbucket-blue
